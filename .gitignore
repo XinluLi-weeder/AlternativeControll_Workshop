@@ -1,0 +1,17 @@
+Binaries/
+Build/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+*.sln
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+__pycache__/
+Releases/
+Packaging/
+Documentation/*.log
+Documentation/*-backup-*.log
+Documentation/BeforeVisualUpgrade.zip
+Documentation/DeviceTestV2.txt
+Documentation/PackagedPreview.png

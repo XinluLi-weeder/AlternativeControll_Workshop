@@ -1,0 +1,19 @@
+# 分享 Room Shift Demo
+
+## 给只想试玩的人：Windows 打包版
+
+从 GitHub Releases 下载 Windows 压缩包，完整解压到普通文件夹，再双击 `RoomShiftDemo.exe`。请勿只从压缩包里单独拖出 exe：旁边的 `Engine/` 和 `RoomShiftDemo/Content/` 等文件也是游戏的一部分。试玩者无需安装 Unreal Engine 或 Visual Studio。当前只制作 Windows 版；鼠标和键盘即可玩，Arduino 不是必需品。压缩包内附有中文操作说明。
+
+项目作者可在已安装 Unreal Engine 5.7 的 Windows 电脑上重新打包：在编辑器的 Platforms → Windows 中选择 Package Project，或运行 Unreal Automation Tool 的 BuildCookRun（Win64 Development，build/cook/stage/package/archive）。打包结果放在 `Releases/Windows/`，它被 Git 忽略。运行 `python Tools/make_release_zip.py` 会生成 `Releases/RoomShiftDemo-Windows-UE5.7.zip`，排除不影响游玩的调试符号，作为 GitHub Release 附件上传。向试玩者发送 Release 下载链接。
+
+## 给想看代码或改项目的人：GitHub 仓库
+
+上传 `Config/`、`Content/`、`Plugins/RoomShift/Source/`、`Source/`、`Tools/`、`.uproject` 和说明文件。`.gitignore` 已排除 `Binaries/`、`Intermediate/`、`Saved/`、`DerivedDataCache/`、打包输出及日志。`Content/RoomShift` 内的 `.uasset` 和 `.umap` 必须保留，只有 C++ 代码无法复原现有场景资源。
+
+开发者克隆仓库后，用 Unreal Engine 5.7 打开 `RoomShiftDemo.uproject`，允许生成/编译 C++ 模块，然后点击 Play。初次编译需要 Visual Studio 2022 C++ 构建工具与 Windows SDK，时间可能较长。打开编辑器看到空关卡属于正常情况：游戏模式在运行时生成房间和家具。也可以设置 `UE_ROOT` 指向自己的引擎安装目录，再双击 `Launch Demo.cmd`。
+
+GitHub 仓库页面的“Download ZIP”下载的是**项目源码**，不能直接当成免安装游戏。给非开发者分享 GitHub Release 中的打包版。
+
+## 当前公开状态
+
+本目录尚未连接 GitHub 远端仓库；本地打包目录也不会随源码提交。公开发布前选择自己的 GitHub 仓库名称与可见性，然后推送源码并上传完整 Windows zip。真实 Arduino/编码器尚未经过实物测试；鼠标玩法可独立运行。
