@@ -9,6 +9,8 @@
 Windows 可以双击 `Launch Demo.cmd` 游玩：它读取环境变量 `UE_ROOT`（应指向 Unreal Engine 5.7 安装目录）；在制作电脑上也能自动找到已有安装。其他电脑可以打开 `RoomShiftDemo.uproject`，等待模块编译和加载后点击 Play。Windows 源码运行方式需要 Unreal Engine 5.7、Visual Studio 2022 C++ 构建工具和 Windows SDK。没有编译环境的 Windows 试玩者应下载打包版，解压后运行其中的 `RoomShiftDemo.exe`；无需安装 Unreal。
 
 macOS 不能运行 Windows 的 `.exe`。Mac 开发者可以安装 Unreal Engine 5.7 与该版本所需的 Xcode，再用 `RoomShiftDemo.uproject` 打开源码并编译；如要给无需安装 Unreal 的 Mac 玩家试玩，需在 Mac 上另行打包 macOS 应用。当前没有 Mac 实机验证或 macOS 安装包，具体步骤见 `SHARING.md`。
+
+Windows 试玩版下载：[GitHub Release v0.1.0](https://github.com/XinluLi-weeder/AlternativeControll_Workshop/releases/tag/v0.1.0)。请下载 Release 附件，完整解压后启动 `RoomShiftDemo.exe`；GitHub 页面上的“Code → Download ZIP”是源码。
 关卡 `/Game/RoomShift/RoomShift` 的 GameMode 在运行时生成房间、家具、灯光和鼠标界面，因此编辑器未运行时关卡是空的。
 
 ## 操作

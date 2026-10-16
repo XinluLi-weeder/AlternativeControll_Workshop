@@ -22,4 +22,4 @@ GitHub 仓库页面的“Download ZIP”下载的是**项目源码**，不能直
 
 ## 当前公开状态
 
-本目录尚未连接 GitHub 远端仓库；本地打包目录也不会随源码提交。公开发布前选择自己的 GitHub 仓库名称与可见性，然后推送源码并上传完整 Windows zip。真实 Arduino/编码器尚未经过实物测试；鼠标玩法可独立运行。
+源码已上传到 [AlternativeControll_Workshop](https://github.com/XinluLi-weeder/AlternativeControll_Workshop) 的 `main` 分支。Windows 试玩包已作为 [v0.1.0 Release 附件](https://github.com/XinluLi-weeder/AlternativeControll_Workshop/releases/tag/v0.1.0) 上传；本地打包目录不会随源码提交。真实 Arduino/编码器尚未经过实物测试；鼠标玩法可独立运行。Mac 版尚未构建。
