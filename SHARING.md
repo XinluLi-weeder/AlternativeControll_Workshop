@@ -14,6 +14,12 @@
 
 GitHub 仓库页面的“Download ZIP”下载的是**项目源码**，不能直接当成免安装游戏。给非开发者分享 GitHub Release 中的打包版。
 
+## 给 Mac 用户
+
+现有 `RoomShiftDemo-Windows-UE5.7.zip` 只能在 Windows 上运行。Mac 用户如果装有 Unreal Engine 5.7 和兼容的 Xcode，可以克隆源码，在 macOS 上打开 `RoomShiftDemo.uproject`，允许编译项目与 `RoomShift` 插件，然后在编辑器里点击 Play。项目的核心玩法使用 Unreal 的跨平台模块；`DefaultEngine.ini` 中 DX11 配置仅位于 Windows 专用设置节。这个 Mac 源码运行路径尚未经过实机验证。
+
+如果要让普通 Mac 用户免装 Unreal 试玩，需要在 Mac 上打开项目并选择 Platforms → macOS → Package Project，测试生成的 `.app`，再将**完整打包输出**单独压缩并作为 GitHub Release 的 macOS 附件发布。Windows `.exe` 不能改名为 `.app`，也不能直接替代 Mac 打包过程。若希望兼容 Apple Silicon 与 Intel Mac，需分别验证目标架构，或按 Unreal 的通用二进制方式构建；优先在实际目标设备上测试画面和鼠标操作。向更多用户分发时，还应在 Mac 上处理 Apple 开发者签名与公证，减少系统阻止启动的情况。当前尚未制作或测试 macOS 包。
+
 ## 当前公开状态
 
 本目录尚未连接 GitHub 远端仓库；本地打包目录也不会随源码提交。公开发布前选择自己的 GitHub 仓库名称与可见性，然后推送源码并上传完整 Windows zip。真实 Arduino/编码器尚未经过实物测试；鼠标玩法可独立运行。
