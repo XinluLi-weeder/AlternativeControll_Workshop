@@ -6,6 +6,8 @@
 #include "Components/TextRenderComponent.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/PointLight.h"
+#include "Engine/StaticMeshActor.h"
+#include "Engine/TextRenderActor.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/Canvas.h"
@@ -35,6 +37,9 @@ namespace
 ARoomShiftPuzzle::ARoomShiftPuzzle()
 {
     PrimaryActorTick.bCanEverTick = true;
+    FaceCenters[0]=FVector(530,0,320);
+    FaceCenters[1]=FVector(60,530,320);
+    FaceCenters[2]=FVector(60,-530,320);
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RoomRoot"));
     for (int32 I=0; I<3; ++I)
     {
@@ -63,9 +68,8 @@ int32 ARoomShiftPuzzle::GoalFor(int32 Furniture, int32 Face)
 
 FTransform ARoomShiftPuzzle::FaceTransform(int32 Face, int32 Quarter) const
 {
-    const FVector Centers[] = {FVector(530,0,320),FVector(60,530,320),FVector(60,-530,320)};
     const FVector Axes[] = {FVector::ForwardVector,FVector::RightVector,FVector::RightVector};
-    return FTransform(FQuat(Axes[Face],FMath::DegreesToRadians(90.f*Quarter)),Centers[Face]);
+    return FTransform(FQuat(Axes[Face],FMath::DegreesToRadians(90.f*Quarter)),FaceCenters[Face]);
 }
 
 UStaticMeshComponent* ARoomShiftPuzzle::Box(FString Name, FVector Position, FVector Size, FLinearColor Color, USceneComponent* Parent)
@@ -171,6 +175,14 @@ void ARoomShiftPuzzle::BuildRoom()
         PointLight->SetSourceRadius(45.f);
         if(I==1||I==2) PointLight->SetCastShadows(false);
         Light->GetLightComponent()->SetLightColor(I==0?FLinearColor(1,.90,.78):FLinearColor(.86,.93,1));
+#if WITH_EDITOR
+        if(bBakingEditableScene)
+        {
+            Light->Tags.Add(TEXT("RS_EDITABLE_LIGHT"));
+            Light->SetActorLabel(FString::Printf(TEXT("RoomLight_%d"),I));
+            Light->SetFolderPath(TEXT("RoomShift/Lights"));
+        }
+#endif
     }
 }
 
@@ -202,9 +214,8 @@ void ARoomShiftPuzzle::BuildFurniture()
     Piece(TEXT("DoorHandleMetal"),2,2,FVector(209,473,112),FVector(5,9,20),FLinearColor(.65,.48,.20));
 }
 
-void ARoomShiftPuzzle::BeginPlay()
+void ARoomShiftPuzzle::LoadVisualAssets()
 {
-    Super::BeginPlay();
     BaseMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/M_Surface.M_Surface"));
     if(!BaseMaterial) BaseMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
     WoodMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/M_Wood.M_Wood"));
@@ -212,7 +223,108 @@ void ARoomShiftPuzzle::BeginPlay()
     PlasterMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/M_Plaster.M_Plaster"));
     RoundedMesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/RoomShift/SM_RoundedBox.SM_RoundedBox"));
     if(!WoodMaterial)WoodMaterial=BaseMaterial; if(!FabricMaterial)FabricMaterial=BaseMaterial; if(!PlasterMaterial)PlasterMaterial=BaseMaterial;
-    BuildRoom(); BuildFurniture(); UpdateHighlight();
+}
+
+bool ARoomShiftPuzzle::BindEditableScene()
+{
+    int32 Found=0;
+    for(int32 I=0;I<3;++I) Faces[I]->SetRelativeTransform(FaceTransform(I,0));
+    for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)
+    {
+        AStaticMeshActor* Actor=*It;
+        if(!Actor->ActorHasTag(TEXT("RS_AUTHORED"))) continue;
+        ++Found;
+        UStaticMeshComponent* Mesh=Actor->GetStaticMeshComponent();
+        if(!Mesh) continue;
+        Mesh->SetMobility(EComponentMobility::Movable);
+        int32 Face=-1,Furniture=-1,Select=-1;
+        for(const FName& Tag:Actor->Tags)
+        {
+            const FString Value=Tag.ToString();
+            if(Value.StartsWith(TEXT("RS_FACE_"))) Face=FCString::Atoi(*Value.RightChop(8));
+            else if(Value.StartsWith(TEXT("RS_FURNITURE_"))) Furniture=FCString::Atoi(*Value.RightChop(13));
+            else if(Value.StartsWith(TEXT("RS_SELECT_"))) Select=FCString::Atoi(*Value.RightChop(10));
+        }
+        if(Face>=0&&Face<3)
+        {
+            Actor->AttachToComponent(Faces[Face],FAttachmentTransformRules::KeepWorldTransform);
+            if(Furniture>=0&&Furniture<3)
+            {
+                FRoomPiece P; P.Mesh=Mesh; P.Local=Mesh->GetRelativeTransform(); P.Face=Face; P.Furniture=Furniture;
+                Pieces.Add(P);
+            }
+        }
+        if(Select>=0&&Select<3) SurfaceOwners.Add(Mesh,Select);
+        if(Furniture>=0 || Select>=0)
+        {
+            if(UMaterialInterface* Material=Mesh->GetMaterial(0))
+                Mesh->SetMaterial(0,UMaterialInstanceDynamic::Create(Material,this));
+        }
+    }
+    UE_LOG(LogTemp,Display,TEXT("ROOMSHIFT_EDITABLE_SCENE actors=%d pieces=%d surfaces=%d"),Found,Pieces.Num(),SurfaceOwners.Num());
+    return Found>0;
+}
+
+void ARoomShiftPuzzle::BakeEditableScene()
+{
+#if WITH_EDITOR
+    if(!GetWorld() || GetWorld()->WorldType!=EWorldType::Editor) return;
+    for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)
+        if(It->ActorHasTag(TEXT("RS_AUTHORED"))) { UE_LOG(LogTemp,Warning,TEXT("Editable scene already exists; refusing to overwrite edits.")); return; }
+    LoadVisualAssets(); bBakingEditableScene=true;
+    BuildRoom(); BuildFurniture();
+    TArray<UStaticMeshComponent*> SourceMeshes;
+    GetComponents<UStaticMeshComponent>(SourceMeshes);
+    for(UStaticMeshComponent* Source:SourceMeshes)
+    {
+        auto* Part=GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(),Source->GetComponentTransform());
+        if(!Part) continue;
+        UStaticMeshComponent* Target=Part->GetStaticMeshComponent();
+        Target->SetMobility(EComponentMobility::Movable);
+        Target->SetStaticMesh(Source->GetStaticMesh());
+        Target->SetWorldTransform(Source->GetComponentTransform());
+        Target->SetMaterial(0,Source->GetMaterial(0));
+        Target->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        Target->SetCollisionResponseToAllChannels(ECR_Ignore);
+        Target->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
+        Part->Tags.Add(TEXT("RS_AUTHORED"));
+        int32 Face=-1,Furniture=-1;
+        for(const FRoomPiece& P:Pieces) if(P.Mesh==Source) { Face=P.Face; Furniture=P.Furniture; break; }
+        if(Face<0) if(const int32* SurfaceFace=SurfaceOwners.Find(Source)) Face=*SurfaceFace;
+        if(Face>=0) Part->Tags.Add(FName(*FString::Printf(TEXT("RS_FACE_%d"),Face)));
+        if(Furniture>=0) Part->Tags.Add(FName(*FString::Printf(TEXT("RS_FURNITURE_%d"),Furniture)));
+        if(const int32* SurfaceFace=SurfaceOwners.Find(Source)) Part->Tags.Add(FName(*FString::Printf(TEXT("RS_SELECT_%d"),*SurfaceFace)));
+        Part->SetActorLabel(Source->GetName());
+        if(Furniture>=0) Part->SetFolderPath(FName(*FString::Printf(TEXT("RoomShift/Furniture/%s"),FurnitureNames[Furniture])));
+        else if(Face>=0) Part->SetFolderPath(FName(*FString::Printf(TEXT("RoomShift/Rotating Faces/%c"),TCHAR('A'+Face))));
+        else Part->SetFolderPath(Source->GetName().Contains(TEXT("FloorPlank"))?TEXT("RoomShift/Floor Planks"):TEXT("RoomShift/Room"));
+    }
+    TArray<UTextRenderComponent*> SourceLabels;
+    GetComponents<UTextRenderComponent>(SourceLabels);
+    for(UTextRenderComponent* Source:SourceLabels)
+    {
+        auto* Label=GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(),Source->GetComponentTransform());
+        if(!Label) continue;
+        Label->GetTextRender()->SetText(Source->Text);
+        Label->GetTextRender()->SetWorldSize(Source->WorldSize);
+        Label->GetTextRender()->SetTextRenderColor(Source->TextRenderColor);
+        Label->GetTextRender()->SetHorizontalAlignment(Source->HorizontalAlignment);
+        Label->SetActorLabel(Source->GetName());
+        Label->SetFolderPath(TEXT("RoomShift/Labels"));
+    }
+    for(UStaticMeshComponent* Source:SourceMeshes) Source->DestroyComponent();
+    for(UTextRenderComponent* Source:SourceLabels) Source->DestroyComponent();
+    Pieces.Empty(); SurfaceOwners.Empty(); bBakingEditableScene=false;
+    UE_LOG(LogTemp,Display,TEXT("ROOMSHIFT_EDITABLE_SCENE baked %d meshes"),SourceMeshes.Num());
+#endif
+}
+
+void ARoomShiftPuzzle::BeginPlay()
+{
+    Super::BeginPlay();
+    LoadVisualAssets();
+    if(!BindEditableScene()) { BuildRoom(); BuildFurniture(); }
+    UpdateHighlight();
     if(FParse::Param(FCommandLine::Get(),TEXT("RoomShiftShowSolved")))
     {
         FRoomSnapshot Solved; Solved.Turns[0]=1; Solved.Turns[1]=1; Solved.Turns[2]=2;
@@ -649,5 +761,7 @@ ARoomShiftMode::ARoomShiftMode()
 }
 void ARoomShiftMode::BeginPlay()
 {
-    Super::BeginPlay(); GetWorld()->SpawnActor<ARoomShiftPuzzle>();
+    Super::BeginPlay();
+    for(TActorIterator<ARoomShiftPuzzle> It(GetWorld());It;++It) return;
+    GetWorld()->SpawnActor<ARoomShiftPuzzle>();
 }

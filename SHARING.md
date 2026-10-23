@@ -10,7 +10,7 @@
 
 上传 `Config/`、`Content/`、`Plugins/RoomShift/Source/`、`Source/`、`Tools/`、`.uproject` 和说明文件。`.gitignore` 已排除 `Binaries/`、`Intermediate/`、`Saved/`、`DerivedDataCache/`、打包输出及日志。`Content/RoomShift` 内的 `.uasset` 和 `.umap` 必须保留，只有 C++ 代码无法复原现有场景资源。
 
-开发者克隆仓库后，用 Unreal Engine 5.7 打开 `RoomShiftDemo.uproject`，允许生成/编译 C++ 模块，然后点击 Play。初次编译需要 Visual Studio 2022 C++ 构建工具与 Windows SDK，时间可能较长。打开编辑器看到空关卡属于正常情况：游戏模式在运行时生成房间和家具。也可以设置 `UE_ROOT` 指向自己的引擎安装目录，再双击 `Launch Demo.cmd`。
+开发者克隆仓库后，用 Unreal Engine 5.7 打开 `RoomShiftDemo.uproject`，允许生成/编译 C++ 模块。初次编译需要 Visual Studio 2022 C++ 构建工具与 Windows SDK，时间可能较长。关卡中的房间、家具部件和灯光可在编辑器里直接选择、修改和保存；按 Play 则运行解谜。若视口停在房间外，在 Outliner 选中 `RoomShiftPuzzle` 并按 `F` 聚焦。也可以设置 `UE_ROOT` 指向自己的引擎安装目录，再双击 `Launch Demo.cmd`。
 
 GitHub 仓库页面的“Download ZIP”下载的是**项目源码**，不能直接当成免安装游戏。给非开发者分享 GitHub Release 中的打包版。
 

@@ -40,6 +40,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="RoomShift") void Undo();
     UFUNCTION(BlueprintCallable, Category="RoomShift") void ResetPuzzle();
     UFUNCTION(BlueprintCallable, Category="RoomShift") void SelectFace(int32 Face);
+    UFUNCTION(BlueprintCallable, CallInEditor, Category="RoomShift|Editor") void BakeEditableScene();
+    UPROPERTY(EditAnywhere, Category="RoomShift|Layout") FVector FaceCenters[3];
     int32 Selected = 0;
     FRoomSnapshot State;
     FString Message;
@@ -73,7 +75,10 @@ private:
     double LastDeviceTime = 0;
     float CaptureTimer = 0.f;
     bool CaptureRequested = false;
+    bool bBakingEditableScene = false;
     FTransform FaceTransform(int32 Face, int32 Quarter) const;
+    void LoadVisualAssets();
+    bool BindEditableScene();
     UStaticMeshComponent* Box(FString Name, FVector Position, FVector Size, FLinearColor Color, USceneComponent* Parent=nullptr);
     void Piece(FString Name, int32 Furniture, int32 Face, FVector WorldPosition, FVector Size, FLinearColor Color);
     void BuildRoom();

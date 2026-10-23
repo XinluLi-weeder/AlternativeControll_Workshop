@@ -2,7 +2,7 @@
 
 引擎：Unreal Engine 5.7。独立 C++ 项目，玩法位于可迁移的 `Plugins/RoomShift` 插件中。
 
-这是第二版可玩的房间原型：鼠标点选 + 90° 档位旋转、布料/木材/墙面纹理与法线、圆角沙发、选中高亮、自由观察，以及家具拼接后的平滑落地。仍属于程序生成的原型模型，不包含开门动画或物理碰撞解谜。验证记录见 `Documentation/Validation.md`。
+这是第二版可玩的房间原型：鼠标点选 + 90° 档位旋转、布料/木材/墙面纹理与法线、圆角沙发、选中高亮、自由观察，以及家具拼接后的平滑落地。房间模型已保存到关卡，在 Unreal 编辑器中可直接查看和修改；仍属于原型模型，不包含开门动画或物理碰撞解谜。验证记录见 `Documentation/Validation.md`。
 
 ## 打开与运行
 
@@ -11,7 +11,11 @@ Windows 可以双击 `Launch Demo.cmd` 游玩：它读取环境变量 `UE_ROOT`�
 macOS 不能运行 Windows 的 `.exe`。Mac 开发者可以安装 Unreal Engine 5.7 与该版本所需的 Xcode，再用 `RoomShiftDemo.uproject` 打开源码并编译；如要给无需安装 Unreal 的 Mac 玩家试玩，需在 Mac 上另行打包 macOS 应用。当前没有 Mac 实机验证或 macOS 安装包，具体步骤见 `SHARING.md`。
 
 Windows 试玩版下载：[GitHub Release v0.1.0](https://github.com/XinluLi-weeder/AlternativeControll_Workshop/releases/tag/v0.1.0)。请下载 Release 附件，完整解压后启动 `RoomShiftDemo.exe`；GitHub 页面上的“Code → Download ZIP”是源码。
-关卡 `/Game/RoomShift/RoomShift` 的 GameMode 在运行时生成房间、家具、灯光和鼠标界面，因此编辑器未运行时关卡是空的。
+关卡 `/Game/RoomShift/RoomShift` 已保存房间、家具部件和灯光。运行时沿用这些场景对象，另行生成鼠标操作界面。若首次打开时镜头停在房间外，可在 Outliner 选中 `RoomShiftPuzzle`，按 `F` 聚焦，然后用右键加 WASD 移动编辑器镜头。
+
+## 在编辑器里修改场景
+
+World Outliner 中的 `RoomShift` 文件夹按房间、旋转面、家具和灯光分组。选中网格对象即可在 Details 中调整位置、大小和材质；`Content/RoomShift/EditableMaterials` 存放场景使用的材质实例。编辑完按 `Ctrl+S` 保存关卡，按 Play 会使用这些已保存对象。旋转面的轴心坐标在 `RoomShiftPuzzle` 的 `RoomShift|Layout → Face Centers` 中调整；移动轴心时应一并检查所属墙面与家具部件的位置。家具部件的初始位置会从关卡读取，但拼接目标角度和完成后的落地位置仍由 C++ 规则定义。改变解谜目标时需同步修改代码中的目标变换。
 
 ## 操作
 
