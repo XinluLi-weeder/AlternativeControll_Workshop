@@ -11,4 +11,4 @@ if not defined ROOMSHIFT_ENGINE_EXE (
   pause
   exit /b 1
 )
-start "Room Shift" "%ROOMSHIFT_ENGINE_EXE%" "%~dp0RoomShiftDemo.uproject" /Game/RoomShift/RoomShift -game -windowed -ResX=1440 -ResY=900 -ForceRes -nosplash
+start "Room Shift" "%ROOMSHIFT_ENGINE_EXE%" "%~dp0RoomShiftDemo.uproject" /Game/RoomShift/RoomShiftStudio -game -windowed -ResX=1440 -ResY=900 -ForceRes -nosplash

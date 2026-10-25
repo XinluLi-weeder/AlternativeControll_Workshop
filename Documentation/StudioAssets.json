@@ -1,0 +1,984 @@
+{
+  "/Game/ArchVis/Mesh/BookLP.BookLP": {
+    "min": [
+      -9.963706493377686,
+      -13.977386474609375,
+      -0.003685474395751953
+    ],
+    "max": [
+      10.017460346221924,
+      13.987537384033203,
+      6.008759498596191
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Book_Mat_Inst.M_Book_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/CoatHook.CoatHook": {
+    "min": [
+      -1.1226849555969238,
+      -0.029033184051513672,
+      0.6185369491577148
+    ],
+    "max": [
+      1.1222403049468994,
+      5.428395748138428,
+      10.740222930908203
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Coathook.M_Coathook"
+    ]
+  },
+  "/Game/ArchVis/Mesh/CoatHookBacking.CoatHookBacking": {
+    "min": [
+      -24.85897731781006,
+      -0.026848793029785156,
+      2.86102294921875e-06
+    ],
+    "max": [
+      24.858803749084473,
+      2.2217633724212646,
+      11.99999713897705
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_CoathookBack.M_CoathookBack"
+    ]
+  },
+  "/Game/ArchVis/Mesh/Mug.Mug": {
+    "min": [
+      -13.485029458999634,
+      -6.909838676452637,
+      0.0
+    ],
+    "max": [
+      6.925252676010132,
+      6.895709991455078,
+      15.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Mug.M_Mug"
+    ]
+  },
+  "/Game/ArchVis/Mesh/Plug.Plug": {
+    "min": [
+      -1.1474997997283936,
+      -2.7317748069763184,
+      -0.7649999260902405
+    ],
+    "max": [
+      1.1474997997283936,
+      0.00010061264038085938,
+      0.7649998068809509
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Plug.M_Plug"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Block_01.S_Block_01": {
+    "min": [
+      -10.000000953674316,
+      -10.0,
+      0.0
+    ],
+    "max": [
+      0.0,
+      0.0,
+      10.000000953674316
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Master.M_Wood_A_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Block_02.S_Block_02": {
+    "min": [
+      -10.000000953674316,
+      -10.0,
+      0.0
+    ],
+    "max": [
+      0.0,
+      9.5367431640625e-07,
+      20.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Master.M_Wood_A_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Block_05.S_Block_05": {
+    "min": [
+      -5.000001907348633,
+      -5.0,
+      -4.76837158203125e-07
+    ],
+    "max": [
+      0.0,
+      0.0,
+      10.000001430511475
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Master.M_Wood_A_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Block_07.S_Block_07": {
+    "min": [
+      -5.000000476837158,
+      -9.829848289489746,
+      -4.76837158203125e-07
+    ],
+    "max": [
+      4.76837158203125e-07,
+      0.0,
+      9.829847812652588
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Master.M_Wood_A_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Block_09.S_Block_09": {
+    "min": [
+      -5.0,
+      -9.999999046325684,
+      -9.5367431640625e-07
+    ],
+    "max": [
+      0.0,
+      10.000000953674316,
+      9.999999046325684
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Master.M_Wood_A_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Crayon_A.S_Crayon_A": {
+    "min": [
+      -0.41999998688697815,
+      -0.4200001657009125,
+      0.0
+    ],
+    "max": [
+      0.41999998688697815,
+      0.4200001060962677,
+      10.502318382263184
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Crayon.M_Crayon"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Domino_Single_01.S_Domino_Single_01": {
+    "min": [
+      -0.8000000715255737,
+      -4.0,
+      0.0
+    ],
+    "max": [
+      5.960464477539063e-08,
+      0.0,
+      8.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Domino_Master.M_Domino_Master"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_PopsicleStick_01.S_PopsicleStick_01": {
+    "min": [
+      -0.800000011920929,
+      -0.3000001013278961,
+      0.0
+    ],
+    "max": [
+      0.800000011920929,
+      7.450580596923828e-07,
+      15.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Wood_A_Popsicle.M_Wood_A_Popsicle"
+    ]
+  },
+  "/Game/ArchVis/Mesh/S_Trim_Floor.S_Trim_Floor": {
+    "min": [
+      -200.00000762939453,
+      -320.00006103515625,
+      -4.76837158203125e-07
+    ],
+    "max": [
+      199.97911834716797,
+      560.0186157226562,
+      5.024728298187256
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WoodFloor_MAT_Inst.M_WoodFloor_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Background.SM_Background": {
+    "min": [
+      -1879.6558837890625,
+      -3.0517578125e-05,
+      -524.0
+    ],
+    "max": [
+      1879.6556396484375,
+      698.1043395996094,
+      1524.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Background_Mat.M_Background_Mat"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Balcony.SM_Balcony": {
+    "min": [
+      -900.0,
+      -150.0,
+      -19.999984741210938
+    ],
+    "max": [
+      850.0,
+      0.0,
+      0.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_BlackBox.SM_BlackBox": {
+    "min": [
+      -475.0,
+      -5.000005722045898,
+      -246.69491577148438
+    ],
+    "max": [
+      475.0,
+      4.999994277954102,
+      246.69491577148438
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Black_MAT.M_Black_MAT"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_BlackBox_Hole.SM_BlackBox_Hole": {
+    "min": [
+      -475.0,
+      -2.3104307651519775,
+      -246.69491577148438
+    ],
+    "max": [
+      475.0,
+      2.3104188442230225,
+      246.69491577148438
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Black_MAT.M_Black_MAT"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Bowl.SM_Bowl": {
+    "min": [
+      -21.763707160949707,
+      -21.763705253601074,
+      -0.04229259490966797
+    ],
+    "max": [
+      21.763705253601074,
+      21.763707160949707,
+      7.095364570617676
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Ceramic_Mat_Inst.M_Ceramic_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Carpet.SM_Carpet": {
+    "min": [
+      -91.88252258300781,
+      -132.84468841552734,
+      -0.05081534385681152
+    ],
+    "max": [
+      91.66889953613281,
+      133.59207916259766,
+      3.3315839767456055
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/MI_Carptet_Mat_Inst.MI_Carptet_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_CeilingPiece.SM_CeilingPiece": {
+    "min": [
+      -199.50001525878906,
+      -299.5,
+      270.0
+    ],
+    "max": [
+      199.50001525878906,
+      559.5,
+      320.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_CoffeeTable.SM_CoffeeTable": {
+    "min": [
+      -34.99556350708008,
+      -80.0,
+      0.023784637451171875
+    ],
+    "max": [
+      34.99556350708008,
+      80.0,
+      46.1734733581543
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_CoffeTable_MAT_Inst.M_CoffeTable_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Couch.SM_Couch": {
+    "min": [
+      -82.05233764648438,
+      -100.84613037109375,
+      0.007720947265625
+    ],
+    "max": [
+      8.163970947265625,
+      101.05364990234375,
+      84.57076263427734
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/MI_Couch_NOSSS_Mat_Inst.MI_Couch_NOSSS_Mat_Inst",
+      "/Game/ArchVis/Materials/MI_Couch_NOSSS_Mat_Inst.MI_Couch_NOSSS_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Couch_1seat.SM_Couch_1seat": {
+    "min": [
+      -82.05233764648438,
+      -44.07412338256836,
+      0.007720947265625
+    ],
+    "max": [
+      8.163970947265625,
+      45.12021255493164,
+      84.57076263427734
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/MI_Couch_NOSSS_Mat_Inst.MI_Couch_NOSSS_Mat_Inst",
+      "/Game/ArchVis/Materials/MI_Couch_NOSSS_Mat_Inst.MI_Couch_NOSSS_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Curtain.SM_Curtain": {
+    "min": [
+      -83.50605773925781,
+      -6.264515399932861,
+      5.0
+    ],
+    "max": [
+      0.42388916015625,
+      6.324778079986572,
+      315.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Curtain_MAT_Inst.M_Curtain_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_DeskLamp.SM_DeskLamp": {
+    "min": [
+      -17.648563385009766,
+      -17.642751693725586,
+      0.0
+    ],
+    "max": [
+      17.636943817138672,
+      17.64275550842285,
+      66.84642028808594
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_DeskLamp_Mat_Inst.M_DeskLamp_Mat_Inst",
+      "/Game/ArchVis/Materials/M_FloorLamp_Mat_Inst.M_FloorLamp_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Door.SM_Door": {
+    "min": [
+      -54.15387153625488,
+      -7.2773518562316895,
+      0.0
+    ],
+    "max": [
+      54.15386772155762,
+      12.025928020477295,
+      209.15386962890625
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Door_MAT_Inst.M_Door_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Door_Frame.SM_Door_Frame": {
+    "min": [
+      -54.153873443603516,
+      -1.9036164283752441,
+      0.0
+    ],
+    "max": [
+      54.153865814208984,
+      12.025919437408447,
+      209.15386962890625
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Door_MAT_Inst.M_Door_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Door_NoFrame.SM_Door_NoFrame": {
+    "min": [
+      -47.54198455810547,
+      -7.2773661613464355,
+      1.1195907592773438
+    ],
+    "max": [
+      47.54548645019531,
+      9.76222276687622,
+      201.95568084716797
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Door_MAT_Inst.M_Door_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_FlashLight.SM_FlashLight": {
+    "min": [
+      -2.862250328063965,
+      -2.862250328063965,
+      -0.38470458984375
+    ],
+    "max": [
+      2.862250328063965,
+      2.862250328063965,
+      21.508378982543945
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_FlashLight_Mat_LIT_Inst.M_FlashLight_Mat_LIT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_FlashLight_LightCone.SM_FlashLight_LightCone": {
+    "min": [
+      -37.58898162841797,
+      -37.588985443115234,
+      -113.02835845947266
+    ],
+    "max": [
+      37.58898162841797,
+      37.5889778137207,
+      -0.02835845947265625
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_LightCone_MAT_Inst.M_LightCone_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_FloorLamp.SM_FloorLamp": {
+    "min": [
+      -17.64275360107422,
+      -17.64274787902832,
+      0.0
+    ],
+    "max": [
+      17.64275360107422,
+      17.642759323120117,
+      158.10047912597656
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_FloorLamp_Mat_Inst.M_FloorLamp_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_FloorPiece.SM_FloorPiece": {
+    "min": [
+      -252.45244598388672,
+      -320.0,
+      -1.684229775230587e-13
+    ],
+    "max": [
+      199.50000762939453,
+      594.5523681640625,
+      9.064862237033976e-14
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WoodFloor_MAT_Inst.M_WoodFloor_MAT_Inst",
+      "/Game/ArchVis/Materials/M_WoodFloor_MAT_Inst.M_WoodFloor_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Frame_1.SM_Frame_1": {
+    "min": [
+      -7.62939453125e-06,
+      2.86102294921875e-06,
+      -2.288818359375e-05
+    ],
+    "max": [
+      70.00000762939453,
+      3.403334856033325,
+      53.426673889160156
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Painting_1.M_Painting_1"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Plant.SM_Plant": {
+    "min": [
+      -34.383989334106445,
+      -27.21389675140381,
+      0.0
+    ],
+    "max": [
+      37.32818412780762,
+      33.89552402496338,
+      125.0721664428711
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_PlantLeaf_Mat_Inst.M_PlantLeaf_Mat_Inst",
+      "/Game/ArchVis/Materials/M_PlantBark_Mat_Inst.M_PlantBark_Mat_Inst",
+      "/Game/ArchVis/Materials/M_PlantPot_Mat_Inst.M_PlantPot_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Railing.SM_Railing": {
+    "min": [
+      -6.440357208251953,
+      0.01742267608642578,
+      -26.44036102294922
+    ],
+    "max": [
+      129.99999618530273,
+      7.982577323913574,
+      99.96234130859375
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Railing_MAT_Inst.M_Railing_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Room_OuterShell.SM_Room_OuterShell": {
+    "min": [
+      -2000.0,
+      -325.0,
+      -1200.0
+    ],
+    "max": [
+      2000.0,
+      2000.0,
+      2300.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_RoundCeilingLight.SM_RoundCeilingLight": {
+    "min": [
+      -9.923779487609863,
+      -9.923779487609863,
+      -3.0246875286102295
+    ],
+    "max": [
+      9.923779487609863,
+      9.923779487609863,
+      -0.014564037322998047
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_RoundCeilingLight_Mat_Inst.M_RoundCeilingLight_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Shelving.SM_Shelving": {
+    "min": [
+      -40.009239196777344,
+      -20.009798049926758,
+      -0.009246826171875
+    ],
+    "max": [
+      40.009239196777344,
+      20.009790420532227,
+      154.0092315673828
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Shelving_Inst.M_Shelving_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_SlidingDoors.SM_SlidingDoors": {
+    "min": [
+      -135.0,
+      -7.554901123046875,
+      1.52587890625e-05
+    ],
+    "max": [
+      135.0,
+      7.554901123046875,
+      249.9939727783203
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_SlidingDoor_Mat_Inst.M_SlidingDoor_Mat_Inst",
+      "/Game/ArchVis/Materials/M_Glas_MAt_Inst.M_Glas_MAt_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Socket.SM_Socket": {
+    "min": [
+      -3.0,
+      0.0,
+      0.014421463012695312
+    ],
+    "max": [
+      3.0,
+      0.6000000238418579,
+      9.991209030151367
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Socket.M_Socket"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_TV.SM_TV": {
+    "min": [
+      -52.254302978515625,
+      -3.2950048446655273,
+      0.029087066650390625
+    ],
+    "max": [
+      52.254302978515625,
+      -0.0025300979614257812,
+      61.840126037597656
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_TV_Inst.M_TV_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_Vase_1.SM_Vase_1": {
+    "min": [
+      -8.383787155151367,
+      -8.383785247802734,
+      0.0
+    ],
+    "max": [
+      8.383787155151367,
+      8.383787155151367,
+      42.34578323364258
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Ceramic_Mat_Inst.M_Ceramic_Mat_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_WallPiece1.SM_WallPiece1": {
+    "min": [
+      199.49999237060547,
+      -299.5,
+      0.0
+    ],
+    "max": [
+      200.00000762939453,
+      400.0,
+      320.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_WallPiece2.SM_WallPiece2": {
+    "min": [
+      -40.5,
+      399.5,
+      0.0
+    ],
+    "max": [
+      199.50001525878906,
+      560.0,
+      270.0000305175781
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_WallPiece3.SM_WallPiece3": {
+    "min": [
+      -200.00001525878906,
+      399.5,
+      0.0
+    ],
+    "max": [
+      -40.49998474121094,
+      560.0,
+      270.0000305175781
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_WallPiece4.SM_WallPiece4": {
+    "min": [
+      -200.00000762939453,
+      -300.0,
+      0.0
+    ],
+    "max": [
+      -189.49999237060547,
+      399.5,
+      270.0000305175781
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/SM_WallPiece5.SM_WallPiece5": {
+    "min": [
+      -199.50001525878906,
+      -320.0,
+      0.0
+    ],
+    "max": [
+      200.00001525878906,
+      -299.49993896484375,
+      320.0
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_WallPainInterior_MAT_Inst.M_WallPainInterior_MAT_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/Statue.Statue": {
+    "min": [
+      -19.33012866973877,
+      -19.330127716064453,
+      0.0
+    ],
+    "max": [
+      19.330126762390137,
+      19.330127716064453,
+      86.63294219970703
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Statue_Inst.M_Statue_Inst"
+    ]
+  },
+  "/Game/ArchVis/Mesh/Switch.Switch": {
+    "min": [
+      -3.0,
+      0.0,
+      0.014421463012695312
+    ],
+    "max": [
+      3.0,
+      0.920433521270752,
+      9.991209030151367
+    ],
+    "materials": [
+      "/Game/ArchVis/Materials/M_Socket.M_Socket"
+    ]
+  },
+  "/Game/ArchVis/Mesh/Wire1.Wire1": {
+    "min": [
+      -196.76893615722656,
+      116.60688400268555,
+      -0.07576370239257812
+    ],
+    "max": [
+      -176.5083770751953,
+      190.32484817504883,
+      17.73187828063965
+    ],
+    "materials": [
+      "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_CabinetDoor_L.SM_CabinetDoor_L": {
+    "min": [
+      -0.3983268737792969,
+      -1.7308306694030762,
+      -8.278839111328125
+    ],
+    "max": [
+      60.01774215698242,
+      2.24188232421875,
+      78.2858657836914
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_CabinetParts.MI_CabinetParts"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_CabinetDoor_R.SM_CabinetDoor_R": {
+    "min": [
+      -60.017730712890625,
+      -1.7308225631713867,
+      -8.278831481933594
+    ],
+    "max": [
+      0.3983612060546875,
+      2.241889715194702,
+      78.28587341308594
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_CabinetParts.MI_CabinetParts"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Carpet_01.SM_Carpet_01": {
+    "min": [
+      -181.43396759033203,
+      -109.70853424072266,
+      0.575215071439743
+    ],
+    "max": [
+      177.67961883544922,
+      113.67255401611328,
+      1.2332105934619904
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_Carpets.MI_Carpets"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Carpet_02.SM_Carpet_02": {
+    "min": [
+      -183.22258758544922,
+      -111.72807693481445,
+      0.8889083862304688
+    ],
+    "max": [
+      176.54999542236328,
+      111.3120231628418,
+      2.4499731063842773
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_Carpets.MI_Carpets"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Chair_01.SM_Chair_01": {
+    "min": [
+      -29.200034141540527,
+      -36.165306091308594,
+      0.7486724853515625
+    ],
+    "max": [
+      28.76406955718994,
+      29.391517639160156,
+      111.03487396240234
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_TableAndChair_01.MI_TableAndChair_01"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Chair_02.SM_Chair_02": {
+    "min": [
+      -29.36153793334961,
+      -27.427403450012207,
+      0.118438720703125
+    ],
+    "max": [
+      29.365524291992188,
+      27.685778617858887,
+      115.81019592285156
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_TableAndChair_02.MI_TableAndChair_02"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Couch.SM_Couch": {
+    "min": [
+      -145.17530822753906,
+      -66.48482131958008,
+      -2.39239501953125
+    ],
+    "max": [
+      144.19618225097656,
+      153.55976486206055,
+      166.57333374023438
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_Couch.MI_Couch"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Drawr_01.SM_Drawr_01": {
+    "min": [
+      -29.291584968566895,
+      0.161041259765625,
+      -12.396430492401123
+    ],
+    "max": [
+      29.74605083465576,
+      52.867061614990234,
+      12.755226612091064
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_CabinetParts.MI_CabinetParts"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Table_01.SM_Table_01": {
+    "min": [
+      -97.99787521362305,
+      -54.27057647705078,
+      -0.0383758544921875
+    ],
+    "max": [
+      97.9977912902832,
+      54.27043151855469,
+      100.55194091796875
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_TableAndChair_01.MI_TableAndChair_01"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_Table_02.SM_Table_02": {
+    "min": [
+      -107.20961380004883,
+      -50.21123123168945,
+      -0.3221435546875
+    ],
+    "max": [
+      110.42435836791992,
+      60.25788497924805,
+      96.99373626708984
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_TableAndChair_02.MI_TableAndChair_02"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_01.SM_WoodenShelf_01": {
+    "min": [
+      -72.175048828125,
+      -45.330535888671875,
+      -2.288818359375e-05
+    ],
+    "max": [
+      72.175048828125,
+      45.705169677734375,
+      109.83866882324219
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_WoodenShelf_01.MI_WoodenShelf_01"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_02.SM_WoodenShelf_02": {
+    "min": [
+      -69.56407165527344,
+      -30.917431831359863,
+      -1.52587890625e-05
+    ],
+    "max": [
+      69.56407165527344,
+      30.9173002243042,
+      151.03646850585938
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_WoodenShelf_02.MI_WoodenShelf_02"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_03.SM_WoodenShelf_03": {
+    "min": [
+      -54.704708099365234,
+      -29.110666275024414,
+      -1.52587890625e-05
+    ],
+    "max": [
+      54.704708099365234,
+      26.93303108215332,
+      207.39141845703125
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_WoodenShelf_03.MI_WoodenShelf_03"
+    ]
+  },
+  "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_04.SM_WoodenShelf_04": {
+    "min": [
+      -166.19915771484375,
+      -39.533517837524414,
+      0.640899658203125
+    ],
+    "max": [
+      154.46377563476562,
+      37.18776512145996,
+      271.4166564941406
+    ],
+    "materials": [
+      "/Game/OldFurniturePack_01/Materials/MI_WoodenShelf_04.MI_WoodenShelf_04"
+    ]
+  }
+}

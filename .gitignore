@@ -15,3 +15,12 @@ Documentation/*-backup-*.log
 Documentation/BeforeVisualUpgrade.zip
 Documentation/DeviceTestV2.txt
 Documentation/PackagedPreview.png
+# Licensed source assets are used only in the local editor project. The public
+# repository ships code/layout; the Windows Release contains cooked game data.
+Content/ArchVis/
+Content/ArchVizInteriorVol3/
+Content/Fab/
+Content/OldFurniturePack_01/
+Content/RoomShift/Studio/
+Content/Levels/
+Config/DefaultEditor.ini

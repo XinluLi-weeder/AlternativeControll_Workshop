@@ -5,8 +5,9 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 root = Path(__file__).resolve().parents[1]
-package = root / "Releases" / "Windows"
-output = root / "Releases" / "RoomShiftDemo-Windows-UE5.7.zip"
+version = "v0.2.0"
+package = root / "Releases" / version / "Windows"
+output = root / "Releases" / f"RoomShiftDemo-Windows-UE5.7-{version}.zip"
 if not (package / "RoomShiftDemo.exe").is_file():
     raise SystemExit(f"Packaged executable missing: {package / 'RoomShiftDemo.exe'}")
 

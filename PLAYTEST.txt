@@ -1,13 +1,12 @@
-Room Shift Demo — Windows 试玩说明
+Room Shift Demo v0.2.0 — Windows 试玩说明
 
-1. 将整个压缩包解压到一个文件夹，双击 RoomShiftDemo.exe。
-2. 鼠标左键点击墙面或左侧 A/B/C 卡片，选中可旋转的面。
-3. 点击 TURN -90 / TURN +90，或按 Q / E，旋转当前选中面。
-4. 当家具碎片对齐，点击 ASSEMBLE（或按空格），完整家具会落到地板。
-5. 拼出沙发、桌子和门即完成。H 查看提示，Z 撤销，R 重置。
+完整解压 ZIP，双击 RoomShiftDemo.exe。无需安装 Unreal Engine。
 
-视角：按住右键拖动观察；按住右键并用 WASD 移动，空格/左 Ctrl 升降；
-中键拖动平移，滚轮缩放，Home 恢复默认视角。
+目标：旋转四面墙及天花板上的五个活动面，拼合沙发、茶几、门、扶手椅、书架和书桌。完成的家具会落到固定地板上。
 
-试玩只需鼠标和键盘，不需要 Unreal Engine 或 Arduino。
-这是 Windows 版程序；请保留 exe 旁的 Engine 和 RoomShiftDemo 文件夹。
+鼠标左键点击墙面、家具碎片或底部 A–E 卡片选面；点击 Q -90 / E +90 转动；部件对齐后点击 ASSEMBLE。
+按住鼠标右键拖动视角；玩家位置固定，Home 回正。底部按钮可查看 HINT、UNDO、RESET、NEW MIX 和 HELP。
+
+键盘：1–5 选面，Q/E 转动，空格拼合，H 提示，Z 撤销，R 重置，N 重新打乱，V 切换画面微震。
+
+本包仅适用于 Windows。请保留 exe 旁的 Engine 和 RoomShiftDemo 文件夹。

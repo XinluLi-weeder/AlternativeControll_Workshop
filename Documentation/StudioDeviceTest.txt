@@ -1,0 +1,33 @@
+ROTATE,A,1 {'seq': 3, 'status': 'ok', 'completion_serial': 6, 'busy': True, 'turns': [1, 0, 0, 0, 0], 'joined': [False, False, False, False, False, False]}
+ROTATE,B,-1 {'seq': 4, 'status': 'ok', 'completion_serial': 6, 'busy': True, 'turns': [1, 3, 0, 0, 0], 'joined': [False, False, False, False, False, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 5, 'status': 'ok', 'completion_serial': 7, 'busy': True, 'turns': [1, 3, 0, 0, 0], 'joined': [True, False, False, False, False, False]}
+ROTATE,A,1 {'seq': 6, 'status': 'ok', 'completion_serial': 7, 'busy': True, 'turns': [2, 3, 0, 0, 0], 'joined': [True, False, False, False, False, False]}
+ROTATE,C,1 {'seq': 7, 'status': 'ok', 'completion_serial': 7, 'busy': True, 'turns': [2, 3, 1, 0, 0], 'joined': [True, False, False, False, False, False]}
+ROTATE,C,1 {'seq': 8, 'status': 'ok', 'completion_serial': 7, 'busy': True, 'turns': [2, 3, 2, 0, 0], 'joined': [True, False, False, False, False, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 9, 'status': 'ok', 'completion_serial': 8, 'busy': True, 'turns': [2, 3, 2, 0, 0], 'joined': [True, True, False, False, False, False]}
+ROTATE,B,1 {'seq': 10, 'status': 'ok', 'completion_serial': 8, 'busy': True, 'turns': [2, 0, 2, 0, 0], 'joined': [True, True, False, False, False, False]}
+ROTATE,B,1 {'seq': 11, 'status': 'ok', 'completion_serial': 8, 'busy': True, 'turns': [2, 1, 2, 0, 0], 'joined': [True, True, False, False, False, False]}
+ROTATE,C,1 {'seq': 12, 'status': 'ok', 'completion_serial': 8, 'busy': True, 'turns': [2, 1, 3, 0, 0], 'joined': [True, True, False, False, False, False]}
+ROTATE,C,1 {'seq': 13, 'status': 'ok', 'completion_serial': 8, 'busy': True, 'turns': [2, 1, 0, 0, 0], 'joined': [True, True, False, False, False, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 14, 'status': 'ok', 'completion_serial': 9, 'busy': True, 'turns': [2, 1, 0, 0, 0], 'joined': [True, True, True, False, False, False]}
+ROTATE,C,1 {'seq': 15, 'status': 'ok', 'completion_serial': 9, 'busy': True, 'turns': [2, 1, 1, 0, 0], 'joined': [True, True, True, False, False, False]}
+ROTATE,D,-1 {'seq': 16, 'status': 'ok', 'completion_serial': 9, 'busy': True, 'turns': [2, 1, 1, 3, 0], 'joined': [True, True, True, False, False, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 17, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [2, 1, 1, 3, 0], 'joined': [True, True, True, True, False, False]}
+ROTATE,A,1 {'seq': 18, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [3, 1, 1, 3, 0], 'joined': [True, True, True, True, False, False]}
+ROTATE,D,1 {'seq': 19, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [3, 1, 1, 0, 0], 'joined': [True, True, True, True, False, False]}
+ROTATE,D,1 {'seq': 20, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [3, 1, 1, 1, 0], 'joined': [True, True, True, True, False, False]}
+ROTATE,E,1 {'seq': 21, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [3, 1, 1, 1, 1], 'joined': [True, True, True, True, False, False]}
+ROTATE,E,1 {'seq': 22, 'status': 'ok', 'completion_serial': 10, 'busy': True, 'turns': [3, 1, 1, 1, 2], 'joined': [True, True, True, True, False, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 23, 'status': 'ok', 'completion_serial': 11, 'busy': True, 'turns': [3, 1, 1, 1, 2], 'joined': [True, True, True, True, True, False]}
+ROTATE,B,1 {'seq': 24, 'status': 'ok', 'completion_serial': 11, 'busy': True, 'turns': [3, 2, 1, 1, 2], 'joined': [True, True, True, True, True, False]}
+ROTATE,C,1 {'seq': 25, 'status': 'ok', 'completion_serial': 11, 'busy': True, 'turns': [3, 2, 2, 1, 2], 'joined': [True, True, True, True, True, False]}
+ROTATE,C,1 {'seq': 26, 'status': 'ok', 'completion_serial': 11, 'busy': True, 'turns': [3, 2, 3, 1, 2], 'joined': [True, True, True, True, True, False]}
+ROTATE,E,-1 {'seq': 27, 'status': 'ok', 'completion_serial': 11, 'busy': True, 'turns': [3, 2, 3, 1, 1], 'joined': [True, True, True, True, True, False]}
+HAPTIC,180,140
+ASSEMBLE {'seq': 28, 'status': 'ok', 'completion_serial': 12, 'busy': True, 'turns': [3, 2, 3, 1, 1], 'joined': [True, True, True, True, True, True]}
+ALL_OBJECTS_RESTORED

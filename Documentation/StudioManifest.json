@@ -1,0 +1,198 @@
+[
+  {
+    "actor": "Sofa_Part_0_Face_A",
+    "source": "/Game/ArchVis/Mesh/SM_Couch",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Sofa_0.Sofa_0",
+    "face": 0,
+    "furniture": 0,
+    "goal": [
+      1,
+      3,
+      -1,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "Sofa_Part_1_Face_B",
+    "source": "/Game/ArchVis/Mesh/SM_Couch",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Sofa_1.Sofa_1",
+    "face": 1,
+    "furniture": 0,
+    "goal": [
+      1,
+      3,
+      -1,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "CoffeeTable_Part_0_Face_A",
+    "source": "/Game/ArchVis/Mesh/SM_CoffeeTable",
+    "fragment": "/Game/RoomShift/Studio/Fragments/CoffeeTable_0.CoffeeTable_0",
+    "face": 0,
+    "furniture": 1,
+    "goal": [
+      2,
+      -1,
+      2,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "CoffeeTable_Part_1_Face_C",
+    "source": "/Game/ArchVis/Mesh/SM_CoffeeTable",
+    "fragment": "/Game/RoomShift/Studio/Fragments/CoffeeTable_1.CoffeeTable_1",
+    "face": 2,
+    "furniture": 1,
+    "goal": [
+      2,
+      -1,
+      2,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "Door_Part_0_Face_B",
+    "source": "/Game/ArchVis/Mesh/SM_Door",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Door_0.Door_0",
+    "face": 1,
+    "furniture": 2,
+    "goal": [
+      -1,
+      1,
+      0,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "Door_Part_1_Face_C",
+    "source": "/Game/ArchVis/Mesh/SM_Door",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Door_1.Door_1",
+    "face": 2,
+    "furniture": 2,
+    "goal": [
+      -1,
+      1,
+      0,
+      -1,
+      -1
+    ]
+  },
+  {
+    "actor": "Armchair_Part_0_Face_C",
+    "source": "/Game/ArchVis/Mesh/SM_Couch_1seat",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Armchair_0.Armchair_0",
+    "face": 2,
+    "furniture": 3,
+    "goal": [
+      -1,
+      -1,
+      1,
+      3,
+      -1
+    ]
+  },
+  {
+    "actor": "Armchair_Part_1_Face_D",
+    "source": "/Game/ArchVis/Mesh/SM_Couch_1seat",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Armchair_1.Armchair_1",
+    "face": 3,
+    "furniture": 3,
+    "goal": [
+      -1,
+      -1,
+      1,
+      3,
+      -1
+    ]
+  },
+  {
+    "actor": "Bookcase_Part_0_Face_A",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_03",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Bookcase_0.Bookcase_0",
+    "face": 0,
+    "furniture": 4,
+    "goal": [
+      3,
+      -1,
+      -1,
+      1,
+      2
+    ]
+  },
+  {
+    "actor": "Bookcase_Part_1_Face_D",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_03",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Bookcase_1.Bookcase_1",
+    "face": 3,
+    "furniture": 4,
+    "goal": [
+      3,
+      -1,
+      -1,
+      1,
+      2
+    ]
+  },
+  {
+    "actor": "Bookcase_Part_2_Face_E",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_WoodenShelf_03",
+    "fragment": "/Game/RoomShift/Studio/Fragments/Bookcase_2.Bookcase_2",
+    "face": 4,
+    "furniture": 4,
+    "goal": [
+      3,
+      -1,
+      -1,
+      1,
+      2
+    ]
+  },
+  {
+    "actor": "WritingDesk_Part_0_Face_B",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_Table_01",
+    "fragment": "/Game/RoomShift/Studio/Fragments/WritingDesk_0.WritingDesk_0",
+    "face": 1,
+    "furniture": 5,
+    "goal": [
+      -1,
+      2,
+      3,
+      -1,
+      1
+    ]
+  },
+  {
+    "actor": "WritingDesk_Part_1_Face_C",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_Table_01",
+    "fragment": "/Game/RoomShift/Studio/Fragments/WritingDesk_1.WritingDesk_1",
+    "face": 2,
+    "furniture": 5,
+    "goal": [
+      -1,
+      2,
+      3,
+      -1,
+      1
+    ]
+  },
+  {
+    "actor": "WritingDesk_Part_2_Face_E",
+    "source": "/Game/OldFurniturePack_01/Meshes/SM_Table_01",
+    "fragment": "/Game/RoomShift/Studio/Fragments/WritingDesk_2.WritingDesk_2",
+    "face": 4,
+    "furniture": 5,
+    "goal": [
+      -1,
+      2,
+      3,
+      -1,
+      1
+    ]
+  }
+]

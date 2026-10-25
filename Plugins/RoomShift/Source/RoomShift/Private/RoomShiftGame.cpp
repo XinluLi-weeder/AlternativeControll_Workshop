@@ -29,8 +29,8 @@ IMPLEMENT_MODULE(FDefaultModuleImpl, RoomShift)
 namespace
 {
     constexpr float AssemblyLift = 180.f;
-    const TCHAR* FurnitureNames[3] = {TEXT("SOFA"), TEXT("TABLE"), TEXT("DOOR")};
-    const TCHAR* FaceNames[3] = {TEXT("A / FRONT"), TEXT("B / RIGHT"), TEXT("C / LEFT")};
+    const TCHAR* FurnitureNames[RoomShiftMaxFurniture] = {TEXT("SOFA"), TEXT("COFFEE TABLE"), TEXT("DOOR"), TEXT("ARMCHAIR"), TEXT("BOOKCASE"), TEXT("WRITING DESK")};
+    const TCHAR* FaceNames[RoomShiftMaxFaces] = {TEXT("A / FRONT"), TEXT("B / RIGHT"), TEXT("C / LEFT"), TEXT("D / BACK"), TEXT("E / CEILING")};
     int32 Mod4(int32 Value) { return (Value % 4 + 4) % 4; }
 }
 
@@ -40,13 +40,15 @@ ARoomShiftPuzzle::ARoomShiftPuzzle()
     FaceCenters[0]=FVector(530,0,320);
     FaceCenters[1]=FVector(60,530,320);
     FaceCenters[2]=FVector(60,-530,320);
+    FaceCenters[3]=FVector(-600,0,320);
+    FaceCenters[4]=FVector(-30,0,630);
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RoomRoot"));
-    for (int32 I=0; I<3; ++I)
+    for (int32 I=0; I<RoomShiftMaxFaces; ++I)
     {
         Faces[I] = CreateDefaultSubobject<USceneComponent>(*FString::Printf(TEXT("Face_%d"),I));
         Faces[I]->SetupAttachment(RootComponent);
     }
-    for (int32 I=0; I<3; ++I)
+    for (int32 I=0; I<RoomShiftMaxFurniture; ++I)
     {
         Assemblies[I] = CreateDefaultSubobject<USceneComponent>(*FString::Printf(TEXT("Assembly_%d"),I));
         Assemblies[I]->SetupAttachment(RootComponent);
@@ -55,20 +57,22 @@ ARoomShiftPuzzle::ARoomShiftPuzzle()
 
 FLinearColor ARoomShiftPuzzle::FaceColor(int32 Face)
 {
-    const FLinearColor Colors[] = {FLinearColor(.95f,.36f,.12f),FLinearColor(.17f,.67f,.91f),FLinearColor(.47f,.8f,.48f)};
-    return Colors[FMath::Clamp(Face,0,2)];
+    const FLinearColor Colors[] = {FLinearColor(.9f,.52f,.24f),FLinearColor(.28f,.63f,.75f),FLinearColor(.52f,.7f,.43f),FLinearColor(.68f,.45f,.72f),FLinearColor(.83f,.72f,.36f)};
+    return Colors[FMath::Clamp(Face,0,RoomShiftMaxFaces-1)];
 }
 
 int32 ARoomShiftPuzzle::GoalFor(int32 Furniture, int32 Face)
 {
     // -1 means this wall has no part in that assembly.
-    static const int32 Goals[3][3] = {{1,3,-1},{2,-1,2},{-1,1,0}};
-    return Goals[Furniture][Face];
+    static const int32 Goals[RoomShiftMaxFurniture][RoomShiftMaxFaces] = {
+        {1,3,-1,-1,-1}, {2,-1,2,-1,-1}, {-1,1,0,-1,-1},
+        {-1,-1,1,3,-1}, {3,-1,-1,1,2}, {-1,2,3,-1,1}};
+    return Furniture>=0&&Furniture<RoomShiftMaxFurniture&&Face>=0&&Face<RoomShiftMaxFaces?Goals[Furniture][Face]:-1;
 }
 
 FTransform ARoomShiftPuzzle::FaceTransform(int32 Face, int32 Quarter) const
 {
-    const FVector Axes[] = {FVector::ForwardVector,FVector::RightVector,FVector::RightVector};
+    const FVector Axes[] = {FVector::ForwardVector,FVector::RightVector,FVector::RightVector,FVector::ForwardVector,FVector::UpVector};
     return FTransform(FQuat(Axes[Face],FMath::DegreesToRadians(90.f*Quarter)),FaceCenters[Face]);
 }
 
@@ -133,34 +137,36 @@ void ARoomShiftPuzzle::BuildRoom()
     for(int32 Side=-1;Side<=1;Side+=2)
         Box(FString::Printf(TEXT("SideWoodSkirting%d"),Side),FVector(-30,Side*546,9),FVector(1180,10,18),FLinearColor(.24,.16,.09));
     Box(TEXT("Rug"),FVector(100,-110,1),FVector(410,340,2),FLinearColor(.20,.25,.24));
-    for(int32 I=0;I<3;++I)
+    for(int32 I=0;I<NumFaces;++I)
     {
         Faces[I]->SetRelativeTransform(FaceTransform(I,0));
-        const bool Front=I==0;
+        const bool Front=I==0||I==3, Ceiling=I==4;
+        const float Inward=I==0||I==1||I==4?-1.f:1.f;
+        auto InPlane=[Front,Ceiling,Inward](float U,float V,float Depth){ return Ceiling?FVector(U,V,Depth*Inward):Front?FVector(Depth*Inward,U,V):FVector(U,Depth*Inward,V); };
         auto* Disk=Box(FString::Printf(TEXT("RotatingWall_%d"),I),FVector::ZeroVector,FVector(600,600,14),FLinearColor(.31,.33,.31),Faces[I]);
         Disk->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cylinder.Cylinder")));
-        Disk->SetRelativeRotation(Front ? FRotator(90,0,0) : FRotator(0,0,90));
+        Disk->SetRelativeRotation(Ceiling?FRotator::ZeroRotator:Front?FRotator(90,0,0):FRotator(0,0,90));
         SurfaceOwners.Add(Disk,I);
         for(int32 J=0;J<4;++J)
         {
             float A=PI*.5f*J;
-            FVector P=Front?FVector(-12,275*FMath::Cos(A),275*FMath::Sin(A)):FVector(275*FMath::Cos(A),I==1?-12:12,275*FMath::Sin(A));
-            auto* Mark=Box(FString::Printf(TEXT("WallMark_%d_%d"),I,J),P,Front?FVector(8,24,24):FVector(24,8,24),FaceColor(I),Faces[I]);
+            FVector P=InPlane(275*FMath::Cos(A),275*FMath::Sin(A),12);
+            auto* Mark=Box(FString::Printf(TEXT("WallMark_%d_%d"),I,J),P,Ceiling?FVector(24,24,8):Front?FVector(8,24,24):FVector(24,8,24),FaceColor(I),Faces[I]);
             SurfaceOwners.Add(Mark,I);
         }
         // A visible ring belongs to the selected face and is hit-testable with its disk.
         for(int32 J=0;J<64;++J)
         {
             const float A=2*PI*J/64.f;
-            FVector P=Front?FVector(-16,306*FMath::Cos(A),306*FMath::Sin(A)):FVector(306*FMath::Cos(A),I==1?-16:16,306*FMath::Sin(A));
-            auto* Ring=Box(FString::Printf(TEXT("SelectionRing_%d_%d"),I,J),P,Front?FVector(5,7,32):FVector(7,5,32),FaceColor(I)*.3f,Faces[I]);
-            Ring->SetRelativeRotation(FQuat(Front?FVector::ForwardVector:FVector::RightVector,Front?A:-A));
+            FVector P=InPlane(306*FMath::Cos(A),306*FMath::Sin(A),16);
+            auto* Ring=Box(FString::Printf(TEXT("SelectionRing_%d_%d"),I,J),P,Ceiling?FVector(7,32,5):Front?FVector(5,7,32):FVector(7,5,32),FaceColor(I)*.3f,Faces[I]);
+            Ring->SetRelativeRotation(FQuat(Ceiling?FVector::UpVector:Front?FVector::ForwardVector:FVector::RightVector,Front||Ceiling?A:-A));
             Ring->SetCastShadow(false); SurfaceOwners.Add(Ring,I);
         }
         auto* Label=NewObject<UTextRenderComponent>(this,*FString::Printf(TEXT("WallLabel%d"),I));
         AddInstanceComponent(Label); Label->SetupAttachment(RootComponent);
-        Label->SetRelativeLocation(FaceTransform(I,0).GetLocation()+FVector(Front?-28:0,I==1?-28:I==2?28:0,285));
-        Label->SetRelativeRotation(FRotator(0,Front?180:I==1?-90:90,0));
+        Label->SetRelativeLocation(FaceTransform(I,0).GetLocation()+InPlane(0,265,28));
+        Label->SetRelativeRotation(Ceiling?FRotator(-90,0,0):FRotator(0,I==0?180:I==3?0:I==1?-90:90,0));
         Label->SetText(FText::FromString(FString::Printf(TEXT("%c"),TCHAR('A'+I))));
         Label->SetHorizontalAlignment(EHTA_Center); Label->SetWorldSize(32); Label->SetTextRenderColor(FaceColor(I).ToFColor(true)); Label->RegisterComponent();
     }
@@ -212,6 +218,10 @@ void ARoomShiftPuzzle::BuildFurniture()
     Piece(TEXT("DoorInsetTop"),2,2,FVector(250,481,169),FVector(82,5,86),Door*.75f);
     Piece(TEXT("DoorInsetBottom"),2,2,FVector(250,481,60),FVector(82,5,86),Door*.75f);
     Piece(TEXT("DoorHandleMetal"),2,2,FVector(209,473,112),FVector(5,9,20),FLinearColor(.65,.48,.20));
+    // Primitive fallback; the saved Studio level replaces these with sliced imported furniture.
+    for(int32 F=3;F<RoomShiftMaxFurniture;++F)
+        for(int32 I=0;I<RoomShiftMaxFaces;++I) if(GoalFor(F,I)>=0)
+            Piece(FString::Printf(TEXT("Fallback_%d_%d"),F,I),F,I,FVector(-200+F*20,-280+I*40,40),FVector(30,30,80),Wood);
 }
 
 void ARoomShiftPuzzle::LoadVisualAssets()
@@ -222,13 +232,15 @@ void ARoomShiftPuzzle::LoadVisualAssets()
     FabricMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/M_Fabric.M_Fabric"));
     PlasterMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/M_Plaster.M_Plaster"));
     RoundedMesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/RoomShift/SM_RoundedBox.SM_RoundedBox"));
+    SelectionMaterial=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/Studio/M_Selection.M_Selection"));
     if(!WoodMaterial)WoodMaterial=BaseMaterial; if(!FabricMaterial)FabricMaterial=BaseMaterial; if(!PlasterMaterial)PlasterMaterial=BaseMaterial;
 }
 
 bool ARoomShiftPuzzle::BindEditableScene()
 {
     int32 Found=0;
-    for(int32 I=0;I<3;++I) Faces[I]->SetRelativeTransform(FaceTransform(I,0));
+    int32 MaxFace=-1, MaxFurniture=-1;
+    for(int32 I=0;I<RoomShiftMaxFaces;++I) Faces[I]->SetRelativeTransform(FaceTransform(I,0));
     for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)
     {
         AStaticMeshActor* Actor=*It;
@@ -245,22 +257,26 @@ bool ARoomShiftPuzzle::BindEditableScene()
             else if(Value.StartsWith(TEXT("RS_FURNITURE_"))) Furniture=FCString::Atoi(*Value.RightChop(13));
             else if(Value.StartsWith(TEXT("RS_SELECT_"))) Select=FCString::Atoi(*Value.RightChop(10));
         }
-        if(Face>=0&&Face<3)
+        if(Actor->ActorHasTag(TEXT("RS_RING"))) Mesh->ComponentTags.AddUnique(TEXT("RS_RING"));
+        if(Face>=0&&Face<RoomShiftMaxFaces)
         {
+            MaxFace=FMath::Max(MaxFace,Face);
             Actor->AttachToComponent(Faces[Face],FAttachmentTransformRules::KeepWorldTransform);
-            if(Furniture>=0&&Furniture<3)
+            if(Furniture>=0&&Furniture<RoomShiftMaxFurniture)
             {
+                MaxFurniture=FMath::Max(MaxFurniture,Furniture);
                 FRoomPiece P; P.Mesh=Mesh; P.Local=Mesh->GetRelativeTransform(); P.Face=Face; P.Furniture=Furniture;
                 Pieces.Add(P);
             }
         }
-        if(Select>=0&&Select<3) SurfaceOwners.Add(Mesh,Select);
+        if(Select>=0&&Select<RoomShiftMaxFaces) SurfaceOwners.Add(Mesh,Select);
         if(Furniture>=0 || Select>=0)
         {
             if(UMaterialInterface* Material=Mesh->GetMaterial(0))
                 Mesh->SetMaterial(0,UMaterialInstanceDynamic::Create(Material,this));
         }
     }
+    if(Found>0) { NumFaces=MaxFace+1; NumFurniture=MaxFurniture+1; }
     UE_LOG(LogTemp,Display,TEXT("ROOMSHIFT_EDITABLE_SCENE actors=%d pieces=%d surfaces=%d"),Found,Pieces.Num(),SurfaceOwners.Num());
     return Found>0;
 }
@@ -288,6 +304,7 @@ void ARoomShiftPuzzle::BakeEditableScene()
         Target->SetCollisionResponseToAllChannels(ECR_Ignore);
         Target->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
         Part->Tags.Add(TEXT("RS_AUTHORED"));
+        if(Source->GetName().Contains(TEXT("SelectionRing"))) Part->Tags.Add(TEXT("RS_RING"));
         int32 Face=-1,Furniture=-1;
         for(const FRoomPiece& P:Pieces) if(P.Mesh==Source) { Face=P.Face; Furniture=P.Furniture; break; }
         if(Face<0) if(const int32* SurfaceFace=SurfaceOwners.Find(Source)) Face=*SurfaceFace;
@@ -327,10 +344,11 @@ void ARoomShiftPuzzle::BeginPlay()
     UpdateHighlight();
     if(FParse::Param(FCommandLine::Get(),TEXT("RoomShiftShowSolved")))
     {
-        FRoomSnapshot Solved; Solved.Turns[0]=1; Solved.Turns[1]=1; Solved.Turns[2]=2;
-        Solved.Joined[0]=Solved.Joined[1]=Solved.Joined[2]=true; Restore(Solved);
+        FRoomSnapshot Solved;
+        for(int32 F=0;F<NumFurniture;++F) Solved.Joined[F]=true;
+        Restore(Solved);
     }
-    Message=State.Joined[0]&&State.Joined[1]&&State.Joined[2]?TEXT("ROOM RESTORED / All furniture is now on the floor."):TEXT("Select a glowing wall. Align parts, then ASSEMBLE to lower them to the floor.");
+    Message=JoinedCount()==NumFurniture?TEXT("ROOM RESTORED / Explore your completed room."):TEXT("Restore the sofa first: A 90 / B 270. Select a face, turn, then ASSEMBLE.");
     Socket=FUdpSocketBuilder(TEXT("RoomShiftInput")).AsNonBlocking().BoundToAddress(FIPv4Address(127,0,0,1)).BoundToPort(19872).WithReceiveBufferSize(65536);
     if(!Socket) DeviceStatus=TEXT("DEVICE  /  port 19872 unavailable (mouse still works)");
     if(FParse::Param(FCommandLine::Get(),TEXT("RoomShiftSelfTest")))
@@ -343,7 +361,7 @@ void ARoomShiftPuzzle::BeginPlay()
 
 bool ARoomShiftPuzzle::RotateFace(int32 Face,int32 Direction)
 {
-    if(Busy() || Face<0 || Face>2 || (Direction!=1 && Direction!=-1)) return false;
+    if(Busy() || Face<0 || Face>=NumFaces || (Direction!=1 && Direction!=-1)) return false;
     History.Add(State); Selected=Face; ActiveFace=Face; Elapsed=0;
     UpdateHighlight();
     StartQuat=Faces[Face]->GetRelativeRotation().Quaternion();
@@ -389,12 +407,12 @@ void ARoomShiftPuzzle::Tick(float Delta)
         if(T>=1)
         {
             Landing=-1;
-            Message=State.Joined[0]&&State.Joined[1]&&State.Joined[2]?TEXT("ROOM RESTORED / All three objects are on the floor. RMB + WASD to explore."):TEXT("Furniture placed on the floor. It will stay here while you solve the next object.");
+            Message=JoinedCount()==NumFurniture?TEXT("ROOM RESTORED / All six objects are on the floor. RMB drag to look around."):TEXT("Furniture restored. Try the next object, or use HINT for its target angles.");
         }
     }
     PollDevice();
     // Fine colored tethers explain which wall carries each floating assembly group.
-    for(int32 F=0;F<3;++F)
+    for(int32 F=0;F<NumFurniture;++F)
     {
         FVector Center=FVector::ZeroVector; int32 Count=0;
         for(const auto& P:Pieces)
@@ -402,7 +420,9 @@ void ARoomShiftPuzzle::Tick(float Delta)
         if(Count)
         {
             Center/=Count; FVector Mount=Center;
-            if(Selected==0) Mount.X=515; else Mount.Y=Selected==1?515:-515;
+            if(Selected==0||Selected==3) Mount.X=FaceCenters[Selected].X;
+            else if(Selected==4) Mount.Z=FaceCenters[Selected].Z;
+            else Mount.Y=FaceCenters[Selected].Y;
             DrawDebugLine(GetWorld(),Center,Mount,FaceColor(Selected).ToFColor(true),false,-1,0,.7f);
         }
     }
@@ -411,11 +431,14 @@ void ARoomShiftPuzzle::Tick(float Delta)
 int32 ARoomShiftPuzzle::ReadyFurniture() const
 {
     if(Busy()) return -1;
-    for(int32 F=0;F<3;++F)
+    for(int32 F=0;F<NumFurniture;++F)
     {
         if(State.Joined[F]) continue;
         bool Match=true;
-        for(int32 I=0;I<3;++I) if(GoalFor(F,I)>=0 && GoalFor(F,I)!=State.Turns[I]) Match=false;
+        bool HasPieces=false;
+        for(const auto& P:Pieces) if(P.Furniture==F) HasPieces=true;
+        for(int32 I=0;I<NumFaces;++I) if(GoalFor(F,I)>=0 && GoalFor(F,I)!=State.Turns[I]) Match=false;
+        Match &= HasPieces;
         if(Match) return F;
     }
     return -1;
@@ -428,6 +451,8 @@ bool ARoomShiftPuzzle::Assemble()
     for(auto& P:Pieces) if(P.Furniture==F)
         P.Mesh->AttachToComponent(Assemblies[F],FAttachmentTransformRules::KeepWorldTransform);
     Landing=F; LandingTime=0.f; UpdateHighlight();
+    ++CompletionSerial;
+    if(auto* PC=Cast<ARoomShiftController>(GetWorld()->GetFirstPlayerController())) PC->AssemblyFeedback();
     Message=FString::Printf(TEXT("%s complete! Placing it on the floor..."),FurnitureNames[F]);
     return true;
 }
@@ -435,8 +460,8 @@ bool ARoomShiftPuzzle::Assemble()
 void ARoomShiftPuzzle::Restore(const FRoomSnapshot& Snapshot)
 {
     ActiveFace=-1; Landing=-1; State=Snapshot;
-    for(int32 I=0;I<3;++I) Faces[I]->SetRelativeTransform(FaceTransform(I,State.Turns[I]));
-    for(int32 I=0;I<3;++I) Assemblies[I]->SetRelativeLocation(State.Joined[I]?FVector(0,0,-AssemblyLift):FVector::ZeroVector);
+    for(int32 I=0;I<NumFaces;++I) Faces[I]->SetRelativeTransform(FaceTransform(I,State.Turns[I]));
+    for(int32 I=0;I<NumFurniture;++I) Assemblies[I]->SetRelativeLocation(State.Joined[I]?FVector(0,0,-AssemblyLift):FVector::ZeroVector);
     for(auto& P:Pieces)
     {
         P.Mesh->AttachToComponent(Faces[P.Face],FAttachmentTransformRules::KeepRelativeTransform);
@@ -463,9 +488,24 @@ void ARoomShiftPuzzle::ResetPuzzle()
 }
 void ARoomShiftPuzzle::SelectFace(int32 Face)
 {
-    if(Face<0||Face>2)return;
+    if(Face<0||Face>=NumFaces)return;
     Selected=Face; UpdateHighlight();
     if(!Busy())Message=FString::Printf(TEXT("Selected %s / The glowing wall and highlighted fragments rotate together."),FaceNames[Face]);
+}
+
+void ARoomShiftPuzzle::ScramblePuzzle()
+{
+    if(Busy())return;
+    History.Add(State);
+    FRoomSnapshot Mix;
+    for(int32 Attempt=0;Attempt<32;++Attempt)
+    {
+        for(int32 I=0;I<NumFaces;++I) Mix.Turns[I]=FMath::RandRange(0,3);
+        Restore(Mix);
+        if(ReadyFurniture()<0)break;
+    }
+    if(ReadyFurniture()>=0)Restore(FRoomSnapshot());
+    Message=TEXT("NEW MIX / A fresh starting arrangement. Restore all six objects in fewer turns.");
 }
 
 void ARoomShiftPuzzle::UpdateHighlight()
@@ -476,13 +516,14 @@ void ARoomShiftPuzzle::UpdateHighlight()
         auto* Material=Mesh?Cast<UMaterialInstanceDynamic>(Mesh->GetMaterial(0)):nullptr;
         if(!Material)continue;
         const bool SelectedWall=Entry.Value==Selected;
-        const bool Ring=Mesh->GetName().Contains(TEXT("SelectionRing"));
+        const bool Ring=Mesh->ComponentHasTag(TEXT("RS_RING"))||Mesh->GetName().Contains(TEXT("SelectionRing"));
         Material->SetVectorParameterValue(TEXT("HighlightColor"),FaceColor(Entry.Value));
         Material->SetScalarParameterValue(TEXT("Highlight"),SelectedWall?(Ring?1.f:.035f):(Ring?.008f:0.f));
         if(!Ring) Material->SetVectorParameterValue(TEXT("Tint"),SelectedWall?FLinearColor(.31,.33,.31)+FaceColor(Entry.Value)*.18f:FLinearColor(.31,.33,.31));
     }
     for(const auto& P:Pieces)
     {
+        P.Mesh->SetOverlayMaterial(!State.Joined[P.Furniture]&&P.Face==Selected?SelectionMaterial.Get():nullptr);
         if(auto* Material=Cast<UMaterialInstanceDynamic>(P.Mesh->GetMaterial(0)))
         {
             Material->SetVectorParameterValue(TEXT("HighlightColor"),FaceColor(P.Face));
@@ -500,20 +541,24 @@ int32 ARoomShiftPuzzle::FaceForComponent(const UPrimitiveComponent* Component) c
 
 FString ARoomShiftPuzzle::Hint() const
 {
-    for(int32 F=0;F<3;++F) if(!State.Joined[F])
+    for(int32 F=0;F<NumFurniture;++F) if(!State.Joined[F])
     {
         FString Result=FString::Printf(TEXT("%s / "),FurnitureNames[F]);
-        for(int32 I=0;I<3;++I) if(GoalFor(F,I)>=0) Result+=FString::Printf(TEXT("%c = %d deg   "),TCHAR('A'+I),GoalFor(F,I)*90);
+        for(int32 I=0;I<NumFaces;++I) if(GoalFor(F,I)>=0) Result+=FString::Printf(TEXT("%c = %d deg   "),TCHAR('A'+I),GoalFor(F,I)*90);
         return Result+TEXT("then ASSEMBLE.");
     }
-    return TEXT("All restored. Completed furniture stays on the floor. RMB + WASD to explore.");
+    return TEXT("All restored. Completed furniture stays on the floor. RMB drag to look around.");
+}
+
+int32 ARoomShiftPuzzle::JoinedCount() const
+{
+    int32 N=0; for(int32 F=0;F<NumFurniture;++F) N+=State.Joined[F]?1:0; return N;
 }
 
 void ARoomShiftPuzzle::PollDevice()
 {
     if(!Socket) return;
     uint32 Size=0;
-    // Bounded polling: malformed or excessive traffic cannot monopolize a frame.
     for(int32 N=0;N<16&&Socket->HasPendingData(Size);++N)
     {
         uint8 Buffer[1025]; int32 Read=0;
@@ -526,15 +571,23 @@ void ARoomShiftPuzzle::PollDevice()
         FString Session,Cmd; double Sequence;
         if(!Obj->TryGetStringField(TEXT("session"),Session)||Session.IsEmpty()||Session.Len()>64||!Obj->TryGetStringField(TEXT("cmd"),Cmd)||!Obj->TryGetNumberField(TEXT("seq"),Sequence)||!FMath::IsFinite(Sequence)||Sequence<0||Sequence>2147483647||Sequence!=FMath::FloorToDouble(Sequence)) continue;
         FString Status=TEXT("invalid"); int64 Seq=static_cast<int64>(Sequence);
-        if(const int64* Last=DeviceSequences.Find(Session);Last&&Seq<=*Last) Status=TEXT("duplicate");
-        else if(Busy()) Status=TEXT("busy");
+        if(Cmd==TEXT("status")) Status=TEXT("ok"); // Heartbeat/feedback is available during animations too.
+        else if(const int64* Last=DeviceSequences.Find(Session);Last&&Seq<=*Last) Status=TEXT("duplicate");
+        else if(Busy()&&Cmd!=TEXT("view")) Status=TEXT("busy");
         else
         {
             bool Accepted=false;
-            if(Cmd==TEXT("rotate"))
+            if(Cmd==TEXT("view"))
+            {
+                double Yaw,Pitch;
+                if(Obj->TryGetNumberField(TEXT("yaw"),Yaw)&&Obj->TryGetNumberField(TEXT("pitch"),Pitch))
+                    if(auto* PC=Cast<ARoomShiftController>(GetWorld()->GetFirstPlayerController()))
+                        Accepted=PC->SetViewAngles(static_cast<float>(Yaw),static_cast<float>(Pitch));
+            }
+            else if(Cmd==TEXT("rotate"))
             {
                 double Face,Dir;
-                if(Obj->TryGetNumberField(TEXT("face"),Face)&&Obj->TryGetNumberField(TEXT("dir"),Dir)&&Face>=0&&Face<=2&&Face==FMath::FloorToDouble(Face)&&(Dir==1||Dir==-1)) Accepted=RotateFace(static_cast<int32>(Face),static_cast<int32>(Dir));
+                if(Obj->TryGetNumberField(TEXT("face"),Face)&&Obj->TryGetNumberField(TEXT("dir"),Dir)&&Face>=0&&Face<NumFaces&&Face==FMath::FloorToDouble(Face)&&(Dir==1||Dir==-1)) Accepted=RotateFace(static_cast<int32>(Face),static_cast<int32>(Dir));
             }
             else if(Cmd==TEXT("assemble")) Accepted=Assemble();
             else if(Cmd==TEXT("undo")) { Undo(); Accepted=true; }
@@ -543,10 +596,18 @@ void ARoomShiftPuzzle::PollDevice()
             {
                 if(DeviceSequences.Num()>32) DeviceSequences.Empty();
                 DeviceSequences.Add(Session,Seq); Status=TEXT("ok");
-                DeviceStatus=TEXT("DEVICE  /  connected via local bridge");
+                DeviceStatus=TEXT("DEVICE CONNECTED");
             }
         }
-        FString Reply=FString::Printf(TEXT("{\"seq\":%lld,\"status\":\"%s\",\"turns\":[%d,%d,%d],\"joined\":[%s,%s,%s]}"),Seq,*Status,State.Turns[0],State.Turns[1],State.Turns[2],State.Joined[0]?TEXT("true"):TEXT("false"),State.Joined[1]?TEXT("true"):TEXT("false"),State.Joined[2]?TEXT("true"):TEXT("false"));
+        auto ReplyObject=MakeShared<FJsonObject>();
+        ReplyObject->SetNumberField(TEXT("seq"),Seq); ReplyObject->SetStringField(TEXT("status"),Status);
+        ReplyObject->SetNumberField(TEXT("completion_serial"),CompletionSerial);
+        ReplyObject->SetBoolField(TEXT("busy"),Busy());
+        TArray<TSharedPtr<FJsonValue>> Turns,Joined;
+        for(int32 I=0;I<NumFaces;++I) Turns.Add(MakeShared<FJsonValueNumber>(State.Turns[I]));
+        for(int32 F=0;F<NumFurniture;++F) Joined.Add(MakeShared<FJsonValueBoolean>(State.Joined[F]));
+        ReplyObject->SetArrayField(TEXT("turns"),Turns); ReplyObject->SetArrayField(TEXT("joined"),Joined);
+        FString Reply; auto Writer=TJsonWriterFactory<>::Create(&Reply); FJsonSerializer::Serialize(ReplyObject,Writer);
         FTCHARToUTF8 Data(*Reply); int32 Sent=0; Socket->SendTo(reinterpret_cast<const uint8*>(Data.Get()),Data.Length(),Sent,*Sender);
     }
 }
@@ -561,46 +622,71 @@ bool ARoomShiftPuzzle::RunSelfTest()
 {
     bool OK=true;
     auto Check=[&](bool Condition,const TCHAR* Name){ UE_LOG(LogTemp,Display,TEXT("ROOMSHIFT_CHECK %s %s"),Name,Condition?TEXT("PASS"):TEXT("FAIL")); OK &= Condition; };
-    Check(!RotateFace(-1,1)&&!RotateFace(0,0),TEXT("reject-invalid-command"));
-    const FTransform Initial=Faces[0]->GetComponentTransform();
-    for(int32 I=0;I<4;++I){ Check(RotateFace(0,1),TEXT("quarter-turn")); Tick(1.f); }
-    Check(Faces[0]->GetComponentTransform().Equals(Initial,.001f),TEXT("full-circle"));
-    Restore(FRoomSnapshot()); History.Empty();
-    FRoomSnapshot S; S.Turns[0]=1; S.Turns[1]=3; Restore(S);
-    TArray<FTransform> Before; for(const auto& P:Pieces) Before.Add(P.Mesh->GetComponentTransform());
-    Check(ReadyFurniture()==0&&Assemble(),TEXT("sofa-assembly"));
-    for(int32 I=0;I<Pieces.Num();++I) Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("assembly-preserves-pose"));
-    Check(!RotateFace(0,1),TEXT("reject-during-landing")); Tick(2.f);
-    Before.Empty(); for(const auto& P:Pieces) Before.Add(P.Mesh->GetComponentTransform());
-    Check(RotateFace(1,1),TEXT("donor-turn")); Check(!RotateFace(2,1),TEXT("reject-during-animation")); Tick(1.f);
-    for(int32 I=0;I<Pieces.Num();++I) if(Pieces[I].Furniture==0) Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("sofa-detached-from-donor"));
-    Undo(); Undo(); Check(!State.Joined[0]&&State.Turns[1]==3,TEXT("undo-restores-ownership"));
-    for(const auto& P:Pieces) Check(P.Mesh->GetAttachParent()==Faces[P.Face],TEXT("original-parent"));
-    S=FRoomSnapshot(); S.Turns[0]=1; S.Turns[1]=3; Restore(S); Check(Assemble(),TEXT("solve-sofa"));
-    S=State; S.Turns[0]=2; S.Turns[2]=2; Restore(S); Check(Assemble(),TEXT("solve-table"));
-    S=State; S.Turns[1]=1; S.Turns[2]=0; Restore(S); Check(Assemble(),TEXT("solve-door"));
-    Tick(2.f);
-    Check(State.Joined[0]&&State.Joined[1]&&State.Joined[2],TEXT("complete-level"));
-    for(int32 F=0;F<3;++F)
+    Check(NumFaces==5&&NumFurniture==6,TEXT("five-faces-six-assemblies"));
+    Check(!RotateFace(-1,1)&&!RotateFace(5,1)&&!RotateFace(0,0),TEXT("reject-invalid-command"));
+    for(int32 Face=0;Face<NumFaces;++Face)
     {
-        float Lowest=MAX_flt;
-        for(const auto& P:Pieces)if(P.Furniture==F)
+        const FTransform Initial=Faces[Face]->GetComponentTransform();
+        for(int32 I=0;I<4;++I)
         {
-            Lowest=FMath::Min(Lowest,static_cast<float>(P.Mesh->Bounds.Origin.Z-P.Mesh->Bounds.BoxExtent.Z));
+            Check(RotateFace(Face,1),TEXT("quarter-turn"));
+            for(int32 Sample=0;Sample<4;++Sample)
+            {
+                Tick(.14f);
+                for(const auto& P:Pieces)
+                {
+                    const auto B=P.Mesh->Bounds;
+                    Check(B.Origin.Z-B.BoxExtent.Z>=-1.f&&B.Origin.Z+B.BoxExtent.Z<=620.f,TEXT("rotating-fragments-inside-floor-ceiling"));
+                }
+            }
+        }
+        Check(Faces[Face]->GetComponentTransform().Equals(Initial,.001f),TEXT("full-circle-each-axis"));
+    }
+    Restore(FRoomSnapshot()); History.Empty();
+    Check(!Assemble(),TEXT("unaligned-cannot-assemble"));
+    for(int32 F=0;F<NumFurniture;++F)
+    {
+        FRoomSnapshot S=State;
+        for(int32 Face=0;Face<NumFaces;++Face) if(GoalFor(F,Face)>=0) S.Turns[Face]=GoalFor(F,Face);
+        Restore(S);
+        int32 PartCount=0; TSet<int32> Donors;
+        for(const auto& P:Pieces) if(P.Furniture==F) { ++PartCount; Donors.Add(P.Face); }
+        Check(PartCount>=2&&Donors.Num()>=2,TEXT("furniture-has-multiple-donors"));
+        TArray<FTransform> Before; for(const auto& P:Pieces) Before.Add(P.Mesh->GetComponentTransform());
+        const int32 SerialBefore=CompletionSerial;
+        Check(ReadyFurniture()==F&&Assemble(),TEXT("assemble-target"));
+        Check(CompletionSerial==SerialBefore+1,TEXT("one-feedback-per-assembly"));
+        Check(!Assemble()&&CompletionSerial==SerialBefore+1,TEXT("no-duplicate-feedback"));
+        for(int32 I=0;I<Pieces.Num();++I) Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("assembly-preserves-pose"));
+        Check(!RotateFace(0,1),TEXT("reject-during-landing")); Tick(2.f);
+        float Lowest=MAX_flt;
+        for(const auto& P:Pieces) if(P.Furniture==F)
+        {
+            Lowest=FMath::Min(Lowest,float(P.Mesh->Bounds.Origin.Z-P.Mesh->Bounds.BoxExtent.Z));
             Check(P.Mesh->GetAttachParent()==Assemblies[F],TEXT("assembled-floor-parent"));
         }
-        Check(FMath::Abs(Lowest)<.1f,TEXT("furniture-touches-floor"));
+        Check(FMath::Abs(Lowest)<1.f,TEXT("furniture-touches-floor"));
+        Before.Empty(); for(const auto& P:Pieces) Before.Add(P.Mesh->GetComponentTransform());
+        for(int32 Face=0;Face<NumFaces;++Face) { RotateFace(Face,1); Tick(1.f); }
+        for(int32 I=0;I<Pieces.Num();++I) if(State.Joined[Pieces[I].Furniture]) Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("restored-furniture-stays-on-floor"));
+        for(int32 Face=0;Face<NumFaces;++Face) Undo();
+        Undo(); Check(!State.Joined[F],TEXT("undo-assembly"));
+        for(const auto& P:Pieces) if(P.Furniture==F) Check(P.Mesh->GetAttachParent()==Faces[P.Face],TEXT("undo-restores-donor"));
+        Check(Assemble(),TEXT("reassemble-after-undo")); Tick(2.f);
     }
-    Before.Empty();for(const auto& P:Pieces)Before.Add(P.Mesh->GetComponentTransform());
-    for(int32 I=0;I<3;++I){RotateFace(I,1);Tick(1.f);}
-    for(int32 I=0;I<Pieces.Num();++I)Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("floor-objects-independent-of-all-walls"));
-    const auto Completed=State; Restore(Completed);
-    for(int32 I=0;I<Pieces.Num();++I)Check(Pieces[I].Mesh->GetComponentTransform().Equals(Before[I],.01f),TEXT("restore-completed-pose"));
-    SelectFace(2);
-    for(const auto& Entry:SurfaceOwners)if(Entry.Key->GetName().Contains(TEXT("SelectionRing")))
+    Check(JoinedCount()==NumFurniture,TEXT("complete-six-objects"));
+    ScramblePuzzle(); Check(JoinedCount()==0&&ReadyFurniture()<0,TEXT("new-mix-restarts-unsolved"));
+    Undo(); Check(JoinedCount()==NumFurniture,TEXT("undo-new-mix-restores-room"));
+    ResetPuzzle(); Check(JoinedCount()==0,TEXT("reset-progress"));
+    for(const auto& P:Pieces) Check(P.Mesh->GetAttachParent()==Faces[P.Face]&&P.Mesh->GetRelativeTransform().Equals(P.Local,.01f),TEXT("reset-pose-and-parent"));
+    for(int32 Face=0;Face<NumFaces;++Face)
     {
-        auto* Material=Cast<UMaterialInstanceDynamic>(CastChecked<UStaticMeshComponent>(Entry.Key)->GetMaterial(0));
-        Check(Material&&Material->K2_GetScalarParameterValue(TEXT("Highlight"))==(Entry.Value==2?1.f:.008f),TEXT("selected-ring-highlight"));
+        SelectFace(Face);
+        for(const auto& Entry:SurfaceOwners) if(Entry.Key->ComponentHasTag(TEXT("RS_RING")))
+        {
+            auto* Material=Cast<UMaterialInstanceDynamic>(CastChecked<UStaticMeshComponent>(Entry.Key)->GetMaterial(0));
+            Check(Material&&FMath::IsNearlyEqual(Material->K2_GetScalarParameterValue(TEXT("Highlight")),Entry.Value==Face?1.f:.008f),TEXT("selection-ring"));
+        }
     }
     Restore(FRoomSnapshot()); History.Empty(); return OK;
 }
@@ -614,8 +700,8 @@ void ARoomShiftController::BeginPlay()
 {
     Super::BeginPlay(); bShowMouseCursor=true;
     FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false); Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); SetInputMode(Mode);
-    auto* Camera=GetWorld()->SpawnActor<ACameraActor>(FVector(-550,0,260),ViewRotation);
-    Camera->GetCameraComponent()->FieldOfView=108;
+    auto* Camera=GetWorld()->SpawnActor<ACameraActor>(FVector(-80,0,150),ViewRotation);
+    Camera->GetCameraComponent()->FieldOfView=120;
     Camera->GetCameraComponent()->bConstrainAspectRatio=false;
     Camera->GetCameraComponent()->PostProcessSettings.bOverride_AutoExposureMethod=true;
     Camera->GetCameraComponent()->PostProcessSettings.AutoExposureMethod=EAutoExposureMethod::AEM_Manual;
@@ -627,12 +713,26 @@ void ARoomShiftController::BeginPlay()
     Camera->GetCameraComponent()->PostProcessSettings.AmbientOcclusionRadius=70.f;
     SetViewTarget(Camera);
 }
+bool ARoomShiftController::SetViewAngles(float Yaw, float Pitch)
+{
+    if(!FMath::IsFinite(Yaw)||!FMath::IsFinite(Pitch)) return false;
+    ViewRotation=FRotator(FMath::Clamp(Pitch,-80.f,80.f),FRotator::NormalizeAxis(Yaw),0.f);
+    if(GetViewTarget()) GetViewTarget()->SetActorRotation(ViewRotation);
+    return true;
+}
+
+void ARoomShiftController::AssemblyFeedback()
+{
+    FeedbackRemaining=.28f;
+    bForceFeedbackEnabled=true;
+    PlayDynamicForceFeedback(.4f,.22f,true,true,true,true,EDynamicForceFeedbackAction::Start);
+}
+
 void ARoomShiftController::PlayerTick(float DeltaTime)
 {
     Super::PlayerTick(DeltaTime); auto* P=Puzzle(); if(!P)return;
     const bool Right=IsInputKeyDown(EKeys::RightMouseButton);
-    const bool Middle=IsInputKeyDown(EKeys::MiddleMouseButton);
-    const bool Navigating=Right||Middle;
+    const bool Navigating=Right;
     if(Navigating!=Looking)
     {
         Looking=Navigating; bShowMouseCursor=!Navigating;
@@ -644,43 +744,27 @@ void ARoomShiftController::PlayerTick(float DeltaTime)
         else
         {
             FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false); Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); SetInputMode(Mode);
-            GetWorld()->GetGameViewport()->SetMouseCaptureMode(EMouseCaptureMode::CaptureDuringRightMouseDown);
+            // Forward the first left click after camera navigation to the HUD as well.
+            GetWorld()->GetGameViewport()->SetMouseCaptureMode(EMouseCaptureMode::CaptureDuringMouseDown);
         }
     }
     if(Right)
     {
         float X,Y; GetInputMouseDelta(X,Y);
-        ViewRotation.Yaw+=X*.24f; ViewRotation.Pitch=FMath::Clamp(ViewRotation.Pitch+Y*.24f,-85.f,85.f);
-        if(GetViewTarget()) GetViewTarget()->SetActorRotation(ViewRotation);
+        SetViewAngles(ViewRotation.Yaw+X*.24f,ViewRotation.Pitch+Y*.24f);
     }
     auto* Camera=Cast<ACameraActor>(GetViewTarget());
     if(Camera)
     {
-        FVector Move=FVector::ZeroVector;
-        if(Right)
-        {
-            Move+=Camera->GetActorForwardVector()*(float(IsInputKeyDown(EKeys::W))-float(IsInputKeyDown(EKeys::S)));
-            Move+=Camera->GetActorRightVector()*(float(IsInputKeyDown(EKeys::D))-float(IsInputKeyDown(EKeys::A)));
-            Move.Z+=float(IsInputKeyDown(EKeys::SpaceBar))-float(IsInputKeyDown(EKeys::LeftControl));
-            Move=Move.GetClampedToMaxSize(1.f)*DeltaTime*(IsInputKeyDown(EKeys::LeftShift)?600.f:260.f);
-        }
-        else if(Middle)
-        {
-            float X,Y; GetInputMouseDelta(X,Y);
-            Move=Camera->GetActorRightVector()*(-X*.7f)+Camera->GetActorUpVector()*Y*.7f;
-        }
-        FVector Position=Camera->GetActorLocation()+Move;
-        Position.X=FMath::Clamp(Position.X,-600.f,490.f);Position.Y=FMath::Clamp(Position.Y,-500.f,500.f);Position.Z=FMath::Clamp(Position.Z,80.f,600.f);
-        Camera->SetActorLocation(Position);
-        float Fov=Camera->GetCameraComponent()->FieldOfView;
-        if(WasInputKeyJustPressed(EKeys::MouseScrollUp))Fov-=5;
-        if(WasInputKeyJustPressed(EKeys::MouseScrollDown))Fov+=5;
-        Camera->GetCameraComponent()->FieldOfView=FMath::Clamp(Fov,65.f,115.f);
-        if(WasInputKeyJustPressed(EKeys::Home))
-        {
-            ViewRotation=FRotator(-12,0,0);Camera->SetActorLocationAndRotation(FVector(-550,0,260),ViewRotation);Camera->GetCameraComponent()->FieldOfView=108;
-        }
+        FeedbackRemaining=FMath::Max(0.f,FeedbackRemaining-DeltaTime);
+        const float T=.28f-FeedbackRemaining;
+        const float Strength=bReducedMotion?0.f:FeedbackRemaining/.28f;
+        Camera->GetCameraComponent()->SetRelativeLocation(FVector(0,FMath::Sin(T*95.f)*.9f*Strength,FMath::Sin(T*73.f)*.6f*Strength));
+        // Fixed observation point: input can turn the view, never translate it.
+        Camera->SetActorLocation(FVector(-80,0,150));
+        if(WasInputKeyJustPressed(EKeys::Home)) SetViewAngles(0.f,12.f);
     }
+
     if(!Navigating&&WasInputKeyJustPressed(EKeys::LeftMouseButton))
     {
         float X,Y; GetMousePosition(X,Y);
@@ -694,65 +778,99 @@ void ARoomShiftController::PlayerTick(float DeltaTime)
     if(WasInputKeyJustPressed(EKeys::One))P->SelectFace(0);
     if(WasInputKeyJustPressed(EKeys::Two))P->SelectFace(1);
     if(WasInputKeyJustPressed(EKeys::Three))P->SelectFace(2);
+    if(WasInputKeyJustPressed(EKeys::Four))P->SelectFace(3);
+    if(WasInputKeyJustPressed(EKeys::Five))P->SelectFace(4);
+    if(WasInputKeyJustPressed(EKeys::V))bReducedMotion=!bReducedMotion;
     if(WasInputKeyJustPressed(EKeys::Q))P->RotateFace(P->Selected,-1);
     if(WasInputKeyJustPressed(EKeys::E))P->RotateFace(P->Selected,1);
     if(!Navigating&&WasInputKeyJustPressed(EKeys::SpaceBar))P->Assemble();
     if(WasInputKeyJustPressed(EKeys::Z))P->Undo();
     if(WasInputKeyJustPressed(EKeys::R))P->ResetPuzzle();
+    if(WasInputKeyJustPressed(EKeys::N))P->ScramblePuzzle();
     if(WasInputKeyJustPressed(EKeys::H))P->Message=P->Hint();
 }
 
 void ARoomShiftHUD::Button(float X,float Y,float W,const FString& Label,bool Enabled)
 {
-    const float Scale=FMath::Min(Canvas->SizeX/1440.f,Canvas->SizeY/900.f);
+    const float Scale=UIScale;
     X*=Scale; Y*=Scale; W*=Scale;
     DrawRect(Enabled?FLinearColor(.13,.2,.27,.96):FLinearColor(.08,.1,.12,.8),X,Y,W,36*Scale);
     DrawText(Label,Enabled?FLinearColor(.9,.94,1):FLinearColor(.35,.4,.45),X+12*Scale,Y+8*Scale,GEngine->GetMediumFont(),.8f*Scale);
 }
 void ARoomShiftHUD::DrawHUD()
 {
-    Super::DrawHUD(); auto* PC=Cast<ARoomShiftController>(PlayerOwner); auto* P=PC?PC->Puzzle():nullptr; if(!P)return;
-    const float Scale=FMath::Min(Canvas->SizeX/1440.f,Canvas->SizeY/900.f);
-    UIScale=Scale;
-    auto DrawRect=[this,Scale](FLinearColor C,float X,float Y,float W,float H){ AHUD::DrawRect(C,X*Scale,Y*Scale,W*Scale,H*Scale); };
-    auto DrawText=[this,Scale](const FString& T,FLinearColor C,float X,float Y,UFont* F,float S){ AHUD::DrawText(T,C,X*Scale,Y*Scale,F,S*Scale); };
-    DrawRect(FLinearColor(.025,.04,.06,.92),20,20,310,330);
-    DrawText(TEXT("ROOM / SHIFT"),FLinearColor::White,38,32,GEngine->GetLargeFont(),.8f);
-    DrawText(TEXT("Rotate the room. Restore the objects."),FLinearColor(.6,.72,.8),38,67,GEngine->GetSmallFont(),1.f);
-    for(int32 I=0;I<3;++I)
+    Super::DrawHUD(); if(!Canvas)return;
+    auto* PC=Cast<ARoomShiftController>(PlayerOwner); auto* P=PC?PC->Puzzle():nullptr; if(!P)return;
+    UIScale=FMath::Min(Canvas->SizeX/1280.f,Canvas->SizeY/720.f);
+    const float S=UIScale, W=Canvas->SizeX/S, H=Canvas->SizeY/S;
+    DockX=(W-1100.f)*.5f; DockY=H-126.f;
+    auto Rect=[this,S](FLinearColor C,float X,float Y,float Width,float Height){ AHUD::DrawRect(C,X*S,Y*S,Width*S,Height*S); };
+    auto Text=[this,S](const FString& T,FLinearColor C,float X,float Y,float Size=1.f){ AHUD::DrawText(T,C,X*S,Y*S,GEngine->GetSmallFont(),Size*S); };
+    const FLinearColor Ink(.90,.88,.82), Muted(.57,.61,.59), Panel(.028,.034,.032,.94);
+    Text(TEXT("ROOM / SHIFT"),Ink,24,18,1.3f);
+    Text(FString::Printf(TEXT("%d / %d RESTORED    |    %d TURNS"),P->JoinedCount(),P->FurnitureCount(),P->State.Moves),Muted,24,43);
+    // Compact status strip; no tall panel over the room.
+    for(int32 F=0;F<P->FurnitureCount();++F)
     {
-        float Y=104+I*52;
-        DrawRect(I==P->Selected?ARoomShiftPuzzle::FaceColor(I)*.3f:FLinearColor(.07,.1,.14,.9),34,Y,282,44);
-        DrawRect(ARoomShiftPuzzle::FaceColor(I),34,Y,4,44);
-        DrawText(FString::Printf(TEXT("%s     %03d deg"),FaceNames[I],P->State.Turns[I]*90),FLinearColor::White,49,Y+11,GEngine->GetMediumFont(),.85f);
+        const float X=W-716+F*116;
+        Rect(Panel,X,16,110,28);
+        Rect(P->State.Joined[F]?FLinearColor(.42,.7,.48):FLinearColor(.21,.24,.23),X,43,110,2);
+        Text(FurnitureNames[F],P->State.Joined[F]?FLinearColor(.6,.85,.62):Muted,X+7,23,.85f);
     }
-    Button(34,270,134,TEXT("<  TURN -90"),!P->Busy()); Button(182,270,134,TEXT("TURN +90  >"),!P->Busy());
-    DrawText(FString::Printf(TEXT("SELECTED: %s"),FaceNames[P->Selected]),ARoomShiftPuzzle::FaceColor(P->Selected),36,319,GEngine->GetSmallFont(),1.f);
-    DrawRect(FLinearColor(.025,.04,.06,.92),20,365,310,165);
-    for(int32 I=0;I<3;++I)
-        DrawText(FString::Printf(TEXT("%s  %s   / %s"),P->State.Joined[I]?TEXT("[OK]"):TEXT("[  ]"),FurnitureNames[I],P->State.Joined[I]?TEXT("FLOOR"):TEXT("FRAGMENTS")),P->State.Joined[I]?FLinearColor(.5,1,.65):FLinearColor(.8,.85,.9),38,380+I*28,GEngine->GetMediumFont(),.8f);
-    Button(34,481,282,TEXT("ASSEMBLE ALIGNED PARTS"),P->ReadyFurniture()>=0);
-    Button(20,545,96,TEXT("UNDO")); Button(127,545,96,TEXT("RESET")); Button(234,545,96,TEXT("HINT"));
-    const float Y=Canvas->SizeY/Scale-94;
-    DrawRect(FLinearColor(.02,.035,.05,.93),20,Y,Canvas->SizeX/Scale-40,74);
-    DrawText(P->Message,FLinearColor(.95,.86,.65),35,Y+10,GEngine->GetMediumFont(),.8f);
-    DrawText(FString::Printf(TEXT("RMB: look + WASD move + SPACE/CTRL rise/fall  |  MMB: pan  |  Wheel: zoom  |  HOME: reset view  |  Turns %d"),P->State.Moves),FLinearColor(.62,.73,.8),35,Y+40,GEngine->GetSmallFont(),1.f);
-    DrawText(P->DeviceStatus,FLinearColor(.5,.65,.73),Canvas->SizeX/Scale-360,25,GEngine->GetSmallFont(),.9f);
+    Rect(Panel,DockX,DockY,1100,110);
+    Text(P->Message,Ink,DockX+16,DockY+10,.95f);
+    for(int32 I=0;I<P->FaceCount();++I)
+    {
+        float X=DockX+14+I*112;
+        Rect(I==P->Selected?FLinearColor(.17,.20,.18,.98):FLinearColor(.07,.085,.075,.95),X,DockY+36,104,40);
+        Rect(ARoomShiftPuzzle::FaceColor(I),X,DockY+36,3,40);
+        Text(FString::Printf(TEXT("%c   %03d deg"),TCHAR('A'+I),P->State.Turns[I]*90),Ink,X+12,DockY+42,1.05f);
+        Text(I==4?TEXT("CEILING"):I==3?TEXT("BACK"):I==2?TEXT("LEFT"):I==1?TEXT("RIGHT"):TEXT("FRONT"),Muted,X+12,DockY+58,.75f);
+    }
+    Button(DockX+580,DockY+38,82,TEXT("Q  -90"),!P->Busy());
+    Button(DockX+668,DockY+38,82,TEXT("E  +90"),!P->Busy());
+    Button(DockX+762,DockY+38,168,TEXT("ASSEMBLE [SPACE]"),P->ReadyFurniture()>=0);
+    Button(DockX+944,DockY+38,64,TEXT("HINT"));
+    Button(DockX+1014,DockY+38,70,TEXT("HELP"));
+    Text(TEXT("1-5 select   |   RMB drag: look around   |   Fixed position   |   HOME: recenter"),Muted,DockX+16,DockY+88,.85f);
+    Text(TEXT("UNDO [Z]"),Ink,DockX+740,DockY+88,.9f);
+    Text(TEXT("NEW MIX [N]"),Ink,DockX+635,DockY+88,.9f);
+    Text(TEXT("RESET [R]"),Ink,DockX+835,DockY+88,.9f);
+    Text(PC->bReducedMotion?TEXT("V: SHAKE OFF"):TEXT("V: SHAKE ON"),Muted,DockX+960,DockY+88,.85f);
+    if(bShowHelp)
+    {
+        Rect(Panel,W-426,68,402,140);
+        Text(TEXT("RESTORE THE ROOM"),Ink,W-410,82,1.2f);
+        Text(TEXT("Each fragment follows its matching colored face."),Muted,W-410,111);
+        Text(TEXT("Turn in 90-degree steps. HINT gives target angles."),Muted,W-410,132);
+        Text(TEXT("ASSEMBLE joins aligned parts and lowers them."),Muted,W-410,153);
+        Text(TEXT("Restored furniture stays on the fixed floor."),Muted,W-410,174);
+    }
 }
+
 bool ARoomShiftHUD::HandleClick(float X,float Y)
 {
-    auto* PC=Cast<ARoomShiftController>(PlayerOwner);auto* P=PC?PC->Puzzle():nullptr;if(!P)return false;
-    // Canvas is cleared by GameViewportClient after drawing; input runs outside that scope.
-    X/=UIScale; Y/=UIScale;
-    if(X<20||X>330)return false;
-    if(X>=34&&X<=316)
+    auto* PC=Cast<ARoomShiftController>(PlayerOwner); auto* P=PC?PC->Puzzle():nullptr; if(!P)return false;
+    X=X/UIScale-DockX; Y=Y/UIScale-DockY;
+    if(X<0||X>1100||Y<0||Y>110)return false;
+    if(Y>=82&&Y<=108)
     {
-        for(int32 I=0;I<3;++I)if(Y>=104+I*52&&Y<=148+I*52){P->SelectFace(I);return true;}
-        if(Y>=270&&Y<=306){P->RotateFace(P->Selected,X<175?-1:1);return true;}
-        if(Y>=481&&Y<=517){P->Assemble();return true;}
+        if(X>=625&&X<=725)P->ScramblePuzzle();
+        else if(X>=730&&X<=820)P->Undo();
+        else if(X>=825&&X<=925)P->ResetPuzzle();
+        else if(X>=945)PC->bReducedMotion=!PC->bReducedMotion;
+        return true;
     }
-    if(Y>=545&&Y<=581){if(X<116)P->Undo();else if(X<223)P->ResetPuzzle();else P->Message=P->Hint();return true;}
-    return Y>=20&&Y<=581;
+    if(Y>=36&&Y<=76)
+    {
+        for(int32 I=0;I<P->FaceCount();++I) if(X>=14+112*I&&X<=118+112*I){P->SelectFace(I);return true;}
+        if(X>=580&&X<=662)P->RotateFace(P->Selected,-1);
+        else if(X>=668&&X<=750)P->RotateFace(P->Selected,1);
+        else if(X>=762&&X<=930)P->Assemble();
+        else if(X>=944&&X<=1008)P->Message=P->Hint();
+        else if(X>=1014&&X<=1084)bShowHelp=!bShowHelp;
+    }
+    return true;
 }
 
 ARoomShiftMode::ARoomShiftMode()

@@ -11,6 +11,8 @@ class USceneComponent;
 class UMaterialInterface;
 class UStaticMesh;
 class FSocket;
+constexpr int32 RoomShiftMaxFaces = 5;
+constexpr int32 RoomShiftMaxFurniture = 6;
 
 struct FRoomPiece
 {
@@ -21,8 +23,8 @@ struct FRoomPiece
 };
 struct FRoomSnapshot
 {
-    int32 Turns[3] = {0,0,0};
-    bool Joined[3] = {false,false,false};
+    int32 Turns[RoomShiftMaxFaces] = {};
+    bool Joined[RoomShiftMaxFurniture] = {};
     int32 Moves = 0;
 };
 
@@ -39,9 +41,14 @@ public:
     UFUNCTION(BlueprintCallable, Category="RoomShift") bool Assemble();
     UFUNCTION(BlueprintCallable, Category="RoomShift") void Undo();
     UFUNCTION(BlueprintCallable, Category="RoomShift") void ResetPuzzle();
+    UFUNCTION(BlueprintCallable, Category="RoomShift") void ScramblePuzzle();
     UFUNCTION(BlueprintCallable, Category="RoomShift") void SelectFace(int32 Face);
     UFUNCTION(BlueprintCallable, CallInEditor, Category="RoomShift|Editor") void BakeEditableScene();
-    UPROPERTY(EditAnywhere, Category="RoomShift|Layout") FVector FaceCenters[3];
+    UPROPERTY(EditAnywhere, Category="RoomShift|Layout") FVector FaceCenters[RoomShiftMaxFaces];
+    int32 FaceCount() const { return NumFaces; }
+    int32 FurnitureCount() const { return NumFurniture; }
+    int32 JoinedCount() const;
+    int32 CompletionSerial = 0;
     int32 Selected = 0;
     FRoomSnapshot State;
     FString Message;
@@ -54,12 +61,15 @@ public:
     static int32 GoalFor(int32 Furniture, int32 Face);
     static FLinearColor FaceColor(int32 Face);
 private:
-    UPROPERTY() TObjectPtr<USceneComponent> Faces[3];
-    UPROPERTY() TObjectPtr<USceneComponent> Assemblies[3];
+    UPROPERTY() TObjectPtr<USceneComponent> Faces[RoomShiftMaxFaces];
+    UPROPERTY() TObjectPtr<USceneComponent> Assemblies[RoomShiftMaxFurniture];
+    int32 NumFaces = RoomShiftMaxFaces;
+    int32 NumFurniture = RoomShiftMaxFurniture;
     UPROPERTY() TObjectPtr<UMaterialInterface> BaseMaterial;
     UPROPERTY() TObjectPtr<UMaterialInterface> WoodMaterial;
     UPROPERTY() TObjectPtr<UMaterialInterface> FabricMaterial;
     UPROPERTY() TObjectPtr<UMaterialInterface> PlasterMaterial;
+    UPROPERTY() TObjectPtr<UMaterialInterface> SelectionMaterial;
     UPROPERTY() TObjectPtr<UStaticMesh> RoundedMesh;
     TArray<FRoomPiece> Pieces;
     TArray<FRoomSnapshot> History;
@@ -96,9 +106,14 @@ public:
     virtual void BeginPlay() override;
     virtual void PlayerTick(float DeltaTime) override;
     ARoomShiftPuzzle* Puzzle() const;
+    void AssemblyFeedback();
+    // Degrees relative to a hardware-calibrated forward direction; roll stays level.
+    UFUNCTION(BlueprintCallable, Category="RoomShift|View") bool SetViewAngles(float Yaw, float Pitch);
+    bool bReducedMotion = false;
 private:
-    FRotator ViewRotation = FRotator(-12.f, 0.f, 0.f);
+    FRotator ViewRotation = FRotator(12.f, 0.f, 0.f);
     bool Looking = false;
+    float FeedbackRemaining = 0.f;
 };
 
 UCLASS()
@@ -110,6 +125,8 @@ public:
     bool HandleClick(float X, float Y);
 private:
     float UIScale = 1.f;
+    float DockX = 0.f, DockY = 0.f;
+    bool bShowHelp = false;
     void Button(float X, float Y, float W, const FString& Label, bool Enabled=true);
 };
 
