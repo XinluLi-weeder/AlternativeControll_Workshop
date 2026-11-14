@@ -1,0 +1,20 @@
+"""Match editor exposure to the gameplay camera; excluded from packaged gameplay."""
+import unreal as u
+es=u.get_editor_subsystem(u.EditorActorSubsystem)
+actors=es.get_all_level_actors()
+v=next((a for a in actors if a.get_actor_label()=='Hallway_EditorExposure'),None)
+if v is None:
+    v=es.spawn_actor_from_class(u.PostProcessVolume,u.Vector(925,-510,110))
+    v.set_actor_label('Hallway_EditorExposure')
+    v.set_folder_path('Hallway/EditorPreview')
+v.set_editor_property('is_editor_only_actor',True)
+v.set_editor_property('unbound',True)
+v.set_editor_property('priority',100)
+s=v.get_editor_property('settings')
+s.set_editor_property('override_auto_exposure_method',True)
+s.set_editor_property('auto_exposure_method',u.AutoExposureMethod.AEM_MANUAL)
+s.set_editor_property('override_auto_exposure_bias',True)
+s.set_editor_property('auto_exposure_bias',6.0)
+v.set_editor_property('settings',s)
+u.get_editor_subsystem(u.LevelEditorSubsystem).save_current_level()
+u.log('HALLWAY_EDITOR_PREVIEW_SAVED')

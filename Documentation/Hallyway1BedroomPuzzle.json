@@ -1,0 +1,102 @@
+{
+  "level": "/Game/Levels/Hallyway1",
+  "camera": [
+    815,
+    1070,
+    690
+  ],
+  "fov": 126,
+  "items": [
+    {
+      "item": 3,
+      "part": "BedroomBed_Part_0",
+      "face": 1,
+      "goal_degrees": 90
+    },
+    {
+      "item": 3,
+      "part": "BedroomBed_Part_1",
+      "face": 2,
+      "goal_degrees": 270
+    },
+    {
+      "item": 3,
+      "part": "BedroomBed_Part_2",
+      "face": 4,
+      "goal_degrees": 180
+    },
+    {
+      "item": 4,
+      "part": "BedroomCabinet_Part_0",
+      "face": 0,
+      "goal_degrees": 180
+    },
+    {
+      "item": 4,
+      "part": "BedroomCabinet_Part_1",
+      "face": 4,
+      "goal_degrees": 90
+    },
+    {
+      "item": 5,
+      "part": "BedroomTable_Part_0",
+      "face": 2,
+      "goal_degrees": 180
+    },
+    {
+      "item": 5,
+      "part": "BedroomTable_Part_1",
+      "face": 3,
+      "goal_degrees": 90
+    },
+    {
+      "item": 5,
+      "part": "BedroomTable_Part_2",
+      "face": 4,
+      "goal_degrees": 270
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowPane_Part_0",
+      "face": 0,
+      "goal_degrees": 270
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowPane_Part_1",
+      "face": 3,
+      "goal_degrees": 180
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowPane_Part_2",
+      "face": 4,
+      "goal_degrees": 90
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowFrame_Part_0",
+      "face": 0,
+      "goal_degrees": 270
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowFrame_Part_1",
+      "face": 3,
+      "goal_degrees": 180
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowFrame_Part_2",
+      "face": 4,
+      "goal_degrees": 90
+    },
+    {
+      "item": 8,
+      "part": "BedroomWindowFrame_Part_3",
+      "face": 0,
+      "goal_degrees": 270
+    }
+  ],
+  "bedroom_puzzle_count": 4
+}

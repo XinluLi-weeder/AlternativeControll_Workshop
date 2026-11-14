@@ -24,3 +24,24 @@ Content/OldFurniturePack_01/
 Content/RoomShift/Studio/
 Content/Levels/
 Config/DefaultEditor.ini
+Documentation/HallwayBackup-*/
+Content/RoomShift/Hallway/
+# Local licensed assets, generated backups and workstation-only settings.
+Content/AdvancedGlassPack/
+Content/Carpet01A/
+Content/Cute_Furniture_Free/
+Content/FREE_Interiors/
+Content/InfinityAssets/
+Content/RoomShift/Bedroom/
+Content/Sequences/
+Content/NewLevelSequence.uasset
+Content/blue.uasset
+Content/noren.fbx
+Documentation/*Backup*/
+Documentation/*Before*/
+Documentation/*Backup*.umap
+Documentation/Audit_*.copy
+roomshift_*_copy_*/
+.claude/
+Arduino/**/*_copy_*/
+Arduino/**/wifi_secrets.h

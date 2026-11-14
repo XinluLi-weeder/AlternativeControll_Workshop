@@ -28,6 +28,21 @@ def serial_lines(port):
 
 def parse_line(line):
     fields = [p.strip().upper() for p in line.strip().split(',')]
+    if fields == ['CENTER']:
+        return {'cmd': 'center'}
+    if len(fields) == 5 and fields[0] == 'ORIENT':
+        q = [float(value) for value in fields[1:]]
+        if not all(math.isfinite(value) and abs(value)<=1.1 for value in q) or not .8 < sum(v*v for v in q) < 1.2:
+            raise ValueError('Invalid orientation quaternion')
+        return {'cmd': 'orientation', 'quaternion': q}
+    if len(fields) == 6 and fields[0] == 'ANGLES':
+        angles = [float(value) for value in fields[1:]]
+        if not all(math.isfinite(value) and abs(value) <= 360000 for value in angles):
+            raise ValueError('ANGLES requires five finite degree values')
+        return {'cmd': 'angles', 'degrees': angles}
+    if fields == ['SHAKE']:
+        # A gesture confirms a currently aligned object. It must never wait in a busy queue.
+        return {'cmd': 'assemble', '_gesture': True}
     if len(fields) == 3 and fields[0] == 'VIEW':
         yaw, pitch = float(fields[1]), float(fields[2])
         if not math.isfinite(yaw) or not math.isfinite(pitch):
@@ -51,6 +66,10 @@ class DeviceClient:
         self.sock.settimeout(.3)
         self.last_completion = None
         self.on_feedback = None
+        self.stage_epoch = None
+        self.run_id = None
+        self.pending_status_seq = None
+        self.pending_status_time = 0.0
 
     def feedback(self, ack):
         serial = ack.get('completion_serial')
@@ -60,9 +79,25 @@ class DeviceClient:
             self.on_feedback('HAPTIC,180,140\n')
         self.last_completion = serial
 
+    def accept_state(self, ack):
+        run_id = ack.get('run_id')
+        if run_id is not None and run_id != self.run_id:
+            self.last_completion = None
+            self.run_id = run_id
+        if 'stage_epoch' in ack:
+            self.stage_epoch = ack['stage_epoch']
+        self.feedback(ack)
+
     def send(self, command, timeout=8):
+        if command.get('cmd') != 'status' and self.stage_epoch is None:
+            self.send({'cmd': 'status'}, timeout)
         self.sequence += 1
         payload = dict(command, session=self.session, seq=self.sequence)
+        gesture = payload.pop('_gesture', False)
+        if self.stage_epoch is not None:
+            payload['stage_epoch'] = self.stage_epoch
+        if self.run_id is not None:
+            payload['run_id'] = self.run_id
         encoded = json.dumps(payload).encode('utf-8')
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
@@ -74,15 +109,67 @@ class DeviceClient:
                 ack = json.loads(data)
                 if ack.get('seq') != self.sequence:
                     continue
-                self.feedback(ack)
+                self.accept_state(ack)
+                if (gesture or command.get('cmd') == 'angles') and ack.get('status') == 'busy':
+                    raise ValueError('Shake discarded while an animation is running')
                 if ack.get('status') in ('ok', 'duplicate'):
                     return ack
                 if ack.get('status') == 'invalid':
                     raise ValueError('Command rejected: check alignment or command arguments')
-            except (socket.timeout, json.JSONDecodeError):
+                if ack.get('status') == 'inactive_control':
+                    raise ValueError('Select Physical controller and Start/Resume in the game menu')
+                if ack.get('status') in ('stale_stage', 'stale_run', 'transition'):
+                    raise ValueError('Room changed or camera is travelling; discard this turn and send a fresh input')
+            except (socket.timeout, ConnectionResetError, json.JSONDecodeError):
                 pass
             time.sleep(.06)
         raise TimeoutError('No acceptance from Unreal. Enter Play and check UDP port 19872.')
+
+    def send_latest(self, command):
+        """Send a disposable real-time sensor sample without waiting for an ACK."""
+        if self.stage_epoch is None:
+            raise ValueError('Request status before sending live samples')
+        if command.get('cmd') not in ('angles', 'view', 'debug'):
+            raise ValueError('Only disposable sensor samples may be sent without an ACK')
+        self.sequence += 1
+        payload = dict(command, session=self.session, seq=self.sequence,
+                       stage_epoch=self.stage_epoch, no_ack=True)
+        if self.run_id is not None:
+            payload['run_id'] = self.run_id
+        self.sock.sendto(json.dumps(payload).encode('utf-8'), self.address)
+
+    def request_status(self):
+        """Ask for a state snapshot without pausing the real-time input loop."""
+        self.sequence += 1
+        self.pending_status_seq = self.sequence
+        self.pending_status_time = time.monotonic()
+        self.sock.sendto(json.dumps({'cmd':'status','session':self.session,
+                                     'seq':self.sequence}).encode('utf-8'), self.address)
+
+    def poll_status(self):
+        if self.pending_status_seq is None:
+            return None
+        self.sock.setblocking(False)
+        try:
+            for _ in range(8):
+                try:
+                    data, sender = self.sock.recvfrom(4096)
+                except (BlockingIOError, ConnectionResetError):
+                    break
+                if sender != self.address:
+                    continue
+                try:
+                    ack = json.loads(data)
+                except json.JSONDecodeError:
+                    continue
+                if ack.get('seq') != self.pending_status_seq:
+                    continue
+                self.pending_status_seq = None
+                self.accept_state(ack)
+                return ack
+        finally:
+            self.sock.settimeout(.3)
+        return None
 
 
 def main():

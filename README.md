@@ -1,6 +1,22 @@
-# Room Shift — Unreal 鼠标解谜 Demo
+# Room Shift — 旋转卧室解谜 Demo
+
+## v0.3.0（当前版本）
+
+Windows 玩家请从 [v0.3.0 Release](https://github.com/XinluLi-weeder/AlternativeControll_Workshop/releases/tag/v0.3.0) 下载 `RoomShiftDemo-Windows-UE5.7-v0.3.0.zip`，完整解压后运行 `RoomShiftDemo.exe`。不需要 Unreal Engine 或 Python。
+
+入口为 `/Game/Levels/Hallyway1`，本版只玩卧室：旋转四面墙与天花板，逐件拼合床、柜子、桌子、窗户与窗框。启动菜单提供 Start playing、Settings、Quit；游戏中 Esc 返回菜单。Settings 可选择 Mouse + keyboard 或 Physical controller。
+
+实体模式在游戏内直接接收旧版 `new_rotate.ino` 的 OSC（UDP 8000），检测编码器与 BNO 是否在线，隐藏鼠标操作栏；五个编码器控制 A–E 面，BNO 控制视角，摇晃确认已对齐家具归位。**新版不需要运行旧 Python 桥接，实体模式前请关闭它。** 电脑与 ESP32 仍需处于同一网络，固件目标 IP 必须指向当前电脑。
+
+详细操作、接入要求与运行库说明见 [Windows v0.3.0 操作说明](Documentation/WindowsPlaytest-v0.3.0.md)。公开源码不包含授权第三方原始模型或派生家具网格，GitHub 自动生成的 Source code ZIP 无法直接还原完整卧室；Windows 试玩附件包含已烹制场景。旧版 Release 保留。
+
+主要源码：`Plugins/RoomShift/Source/RoomShift/Private/HallwayGame.cpp`（规则）、`HallwayAnimation.cpp`（归位）、`HallwayPresentation.cpp`（场景表现）、`HallwayUI.cpp`（菜单与输入）、`HallwayControllerInput.cpp`（原生 OSC）、`HallwayDevice.cpp`（本机诊断接口）。硬件草图为 `Arduino/new_rotate/new_rotate.ino`，编译前将 `wifi_secrets.h.example` 复制为 `wifi_secrets.h` 并配置本地热点。
+
+## 历史版本说明
 
 引擎：Unreal Engine 5.7。独立 C++ 项目，玩法位于可迁移的 `Plugins/RoomShift` 插件中。
+
+本地最新版本（2026-10-30）默认启动 `/Game/Levels/Hallyway`：先拼合玄关，再穿过帘子进入逐渐亮灯的卧室，每间五件家具，共十件，包含四组柜体；整面可见墙壁与饰条、碎片联动旋转，碎片分散布局供玩家环视解谜。操作、目标、编辑和外设接口见 [HallwayGuide](Documentation/HallwayGuide.md)。以下 v0.2.0 内容描述旧 Studio 关卡及已发布包，所述默认地图亦为旧版配置；GitHub Release 尚未包含本次修改。
 
 v0.2.0 是五面房间原型：四面墙与天花板按 90° 档位旋转，恢复六组家具。Windows Release 包含完整已烹制场景，运行无需 Unreal；公开源码仓库保存玩法、关卡布局和构建脚本，不收录授权的第三方原始模型与由其切出的家具网格。完成时有短促画面微震、兼容手柄震动和 Arduino 反馈接口。它仍是解谜原型，不包含开门动画或物理碰撞解谜。新版说明与验证见 `Documentation/StudioGuide.md`。
 
