@@ -114,7 +114,11 @@ bool AHallwayHUD::HandleClick(float X,float Y)
     auto* PC=Cast<AHallwayController>(PlayerOwner);auto* P=PC?PC->Puzzle():nullptr;if(!P||Scale<=0)return false;
     if(P->bMenuOpen)
     {
-        const float MX=(X-Canvas->SizeX*.5f)/Scale+260,MY=(Y-Canvas->SizeY*.5f)/Scale+190;
+        // Canvas only exists during DrawHUD; input runs outside that lifetime.
+        int32 Width=0,Height=0;PC->GetViewportSize(Width,Height);
+        if(Width<=0||Height<=0)return false;
+        const float InputScale=FMath::Min(Width/1280.f,Height/720.f);
+        const float MX=(X-Width*.5f)/InputScale+260,MY=(Y-Height*.5f)/InputScale+190;
         if(MX>=40&&MX<=480)for(int32 I=0;I<3;++I)if(MY>=115+58*I&&MY<=161+58*I)
         {
             if(P->bSettingsOpen){if(I<2)P->SetPhysicalControl(I==1);else P->bSettingsOpen=false;}

@@ -25,6 +25,6 @@ Settings 中选择 Mouse + keyboard。鼠标右键拖动环视；左键选择墙
 ## 文件与平台
 
 - 本 ZIP 是 Windows x64 试玩版，不能用于 macOS，也不是 UE 编辑工程。
-- 如缺少运行库，可运行附带的 `Engine/Extras/Redist/en-us/UEPrereqSetup_x64.exe` 后重试。
+- 如缺少 Microsoft Visual C++ 运行库，可运行附带的 `Engine/Extras/Redist/en-us/vc_redist.x64.exe` 后重试。
 - GitHub 的 Source code ZIP 是公开源码；与此前版本相同，不含第三方授权原始模型和派生家具网格。完整试玩请下载 Windows 附件。
 - 编码器和 BNO 协议保持 `/rotary` 五个 float、`/imu` 四个 float。固件源码的热点凭据改为本地 `wifi_secrets.h`；公开仓库提供 `.example` 模板。

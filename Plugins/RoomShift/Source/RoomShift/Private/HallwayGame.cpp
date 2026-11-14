@@ -61,6 +61,10 @@ FTransform AHallwayPuzzle::FaceTransform(int32 S,int32 F,float Q) const
 void AHallwayPuzzle::BeginPlay()
 {
     Super::BeginPlay();
+#if !WITH_EDITOR
+    // Keep editor diagnostics in logs rather than over the standalone playtest HUD.
+    GAreScreenMessagesEnabled=false;
+#endif
     DeviceRunId=FGuid::NewGuid().ToString(EGuidFormats::Digits);
     if(bStartInBedroom){State.Stage=1;Selected=0;for(int32 I=0;I<ItemCount;++I)if(ItemStage(I)==0)State.Joined[I]=true;}
     auto* Base=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/RoomShift/Hallway/M_HallwayOverlay.M_HallwayOverlay"));
